@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package clientreto1;
+package clientreto1.controler;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,10 +14,11 @@ import javafx.scene.control.Label;
 
 /**
  *
- * @author 2dam
+ * @author Paola
  */
-public class FXMLDocumentController implements Initializable {
+public class FXMLSignInController implements Initializable {
     
+    /*
     @FXML
     private Label label;
     
@@ -26,6 +27,7 @@ public class FXMLDocumentController implements Initializable {
         System.out.println("You clicked me!");
         label.setText("Hello World!");
     }
+    */
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
