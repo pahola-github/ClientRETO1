@@ -5,31 +5,35 @@
  */
 package clientreto1;
 
+import clientreto1.controller.SignUpController;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author 2dam
+ * THIS "MAIN" CLASS IS ONLY FOR TEST SIGNUP CONTROLLER
+ * @author Bryssa
  */
 public class ClientRETO1 extends Application {
     
+     private static final Logger LOGGER = Logger
+            .getLogger("clientreto1");
+    
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        LOGGER.info("Load of the view and the controller");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/SignUp.fxml"));
+        Parent root =(Parent)loader.load();
+        SignUpController controller = loader.getController();
         
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.show();
+        LOGGER.info("Load complete, It's show time!");
+        controller.setStage(stage);
+        controller.initStage(root);
     }
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
         launch(args);
     }
