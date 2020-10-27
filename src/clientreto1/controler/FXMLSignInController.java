@@ -7,15 +7,21 @@ package clientreto1.controler;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -33,7 +39,9 @@ public class FXMLSignInController implements Initializable {
         label.setText("Hello World!");
     }
     */
-   
+    private static final Logger LOGGER = Logger
+            .getLogger("clientreto1.controller");
+    
     @FXML
     private Label err_Login;
     
@@ -52,9 +60,40 @@ public class FXMLSignInController implements Initializable {
     @FXML
     private Hyperlink link_SignUp;
     
-    //txt_Login.textProperty().addListener(this::handleTextChange);
+    private Stage stage;
     
-    public void handleTextChange(){
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+    
+    public void initStage(Parent root) { 
+        
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Login");
+        stage.setResizable(false);
+        stage.setOnShowing(this::handleWindowShowing);
+        btn_Login.setOnAction(this::handleClick);
+        txt_Login.textProperty().addListener(this::handleTextChanged);
+        txt_Password.textProperty().addListener(this::handleTextChanged);
+        stage.show();
+    }
+    
+    public void handleWindowShowing(WindowEvent event){
+        LOG.info("Beginning LogInController::handleWindowShowing");
+        //Set the mnemonic parse to the login button
+        btn_Login.setMnemonicParsing(true);
+        //Set the mnemonic character and the text
+        btn_Login.setText("_Login");
+    }
+    
+    
+    public void handleClick(ActionEvent event){
+            //logIn();
+    }
+    
+    public void handleTextChanged(ObservableValue observable, 
+            String oldValue, String newValue){
         //Verificación de los datos vacios
         if(!txt_Login.getText().isEmpty() || 
                 !txt_Password.getText().isEmpty()){
@@ -79,5 +118,15 @@ public class FXMLSignInController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
+
+    private static class LOG {
+
+        private static void info(String beginning_LogInControllerhandleWindowShow) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public LOG() {
+        }
+    }
     
 }
