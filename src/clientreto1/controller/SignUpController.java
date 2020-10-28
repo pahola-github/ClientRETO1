@@ -140,15 +140,13 @@ public class SignUpController {
         //Username local check
         if(txt_Username.isFocused()){
             usernameOK = false;
-            
-            
-            if(txt_Username.getText().isEmpty()){
+            if(txt_Username.getText().isEmpty()){//Field is empty
                 errString = "Username cannot be empty";
             }else  if(!Pattern.matches("[a-zA-Z0-9]+",txt_Username.getText())){ //Sintax w/o especial characters or blankspaces
                 errString = "Username not valid \n (Only A-Z and 0-9)";
             }else if(txt_Username.getText().length()<6 
                     || txt_Username.getText().length()>20){ //Username length is between 6 and 20
-                errString = "Username must to be between \n 6 – 20 characteres";
+                errString = "Username must to be between \n 6 – 20 characters";
             }else{//Username OK
                 errString = "";
                 usernameOK = true;
@@ -160,22 +158,30 @@ public class SignUpController {
         if(txt_Email.isFocused()){
             if(txt_Email.getText().isEmpty()){
                 errString = "Email cannot be empty";
+            }else if(!checkEmail(txt_Email.getText())){
+                errString = "E-mail syntax. not valid\n(e.g. example@email.com)";
+            }else if(txt_Email.getText().length()<6
+                    || txt_Email.getText().length()>30){
+                errString = "E-mail must to be between \n 6-30 characters";
+            }else{
+                errString = "";
+                emailOK = true;
             }
-            //TODO else if
+            err_Email.setText(errString);
         }
         
         //Fullname local check
         if(txt_Fullname.isFocused()){
             nameOK = false;
             
-            if(txt_Fullname.getText().isEmpty()){
+            if(txt_Fullname.getText().isEmpty()){//Field is empty
                 errString = "Fullname cannot be empty";
             }else if(!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())){
                 errString = "Fullname not valid\n(Only A-Z and blankspaces)";
             }else if(txt_Fullname.getText().length()<5
                     || txt_Fullname.getText().length()>50){
-                errString = "Fullname must to be between \n 5 – 50 characteres";
-            }else{
+                errString = "Fullname must to be between \n 5 – 50 characters";
+            }else{//Fullname OK
                 errString = "";
                 nameOK = true;
             }
@@ -189,7 +195,7 @@ public class SignUpController {
                 errString = "Password cannot be empty";
             }else if(txt_Password.getText().length()<4
                     || txt_Password.getText().length()>20){
-                errString = "Password must to be between \n 4 – 20 characteres";
+                errString = "Password must to be between \n 4 – 20 characters";
             }else{
                 errString = "";
                 passOK = true;
@@ -197,11 +203,10 @@ public class SignUpController {
             err_Password.setText(errString);
         }
         
-        
         //Password verification local check
         if(txt_VerifyPass.isFocused()){
             verifyOK = false;
-            if(!txt_VerifyPass.getText().equals(txt_Password.getText())){
+            if(!txt_VerifyPass.getText().equals(txt_Password.getText())){ //
                 errString = "Passwords do not match,\n try again";
             }else{
                 errString = "";
@@ -209,9 +214,6 @@ public class SignUpController {
             }
             err_VerifyPass.setText(errString);
         }
-        
-
-        
         
         //Final check, if all OK, enable SignUp button
         if(usernameOK && emailOK && nameOK && passOK && verifyOK){
@@ -223,6 +225,27 @@ public class SignUpController {
         
     }
         
-
+    /**
+     * Method that checks if the email has "@" and "."
+     * @param email 
+     * @return the final result
+     */
+    private boolean checkEmail(String email){
+        boolean ok = false;
+        boolean at = false;
+        boolean dot = false;
+        
+        //Verify the email, searching for "@" and "."
+        for(int letra = 0 ; email.length()>letra ; letra++){
+            if(email.substring(letra,letra+1).equalsIgnoreCase("@"))//Search for @
+                at = true;
+            if(at && email.substring(letra, letra+1).equalsIgnoreCase("."))//Search for .
+                dot = true;
+        }
+        if(at && dot)//If has both, OK
+         ok = true;
+        
+        return ok;
+    }
     
 }
