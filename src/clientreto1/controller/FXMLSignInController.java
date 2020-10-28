@@ -162,27 +162,30 @@ public class FXMLSignInController {
         FXMLLoader loader=new FXMLLoader(getClass()
                 .getResource("/clientreto1/view/SignUp.fxml"));
         //Create the parent and load the tree
-        Parent root;
+        Parent root = null;
        try {
            root = (Parent) loader.load();
+            //Create the Stage
+            Stage signUpStage=new Stage();
+               //Load de controller
+            FXMLSignUpController controller = loader.getController();
+            //Set the stage
+            controller.setStage(signUpStage);
+            //Pass the control to the controller
+            controller.initStage(root);
+            //Hide this stage
+            stage.hide();
        } catch (IOException ex) {
            Logger.getLogger(FXMLSignInController.class.getName()).log(Level.SEVERE, null, ex);
        }
-            //Create the Stage
-            Stage signUpStage=new Stage();
-            
-            //Hide this stage
-            stage.hide();
+           
     }
     
     
    /**
     * Load the logOut xml and pass the control to it controller 
     */
-    public void logOut(User user){
-        //Create the loader for the xml
-        FXMLLoader loader=new FXMLLoader(getClass()
-                .getResource("/clientreto1/view/LogOut.fxml"));
-    }
+   
+    
     
 }

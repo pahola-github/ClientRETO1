@@ -12,12 +12,11 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author 2dam
+ * THIS "MAIN" CLASS IS ONLY FOR TEST SIGNUP CONTROLLER
+ * @author Bryssa
  */
 public class ClientRETO1 extends Application {
     
@@ -38,9 +37,7 @@ public class ClientRETO1 extends Application {
         controller.initStage(root);
     }
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
         launch(args);
     }

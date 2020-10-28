@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import model.User;
 
 /**
  * 
@@ -21,6 +22,7 @@ public class FXMLLogOutController {
     @FXML
     private Button btn_LogOut;
     
+    
     private Stage stage;
     /**
      * Set stage for the login 
@@ -29,6 +31,10 @@ public class FXMLLogOutController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    /**
+     * 
+     * @param root 
+     */
     public void initStage(Parent root){
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -43,5 +49,7 @@ public class FXMLLogOutController {
          
          
      }
+
+    
      
 }
