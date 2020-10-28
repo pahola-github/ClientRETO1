@@ -24,7 +24,7 @@ public class ClientRETO1 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Load of the view and the controller");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/SignUp.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/view/SignUp.fxml"));
         Parent root =(Parent)loader.load();
         SignUpController controller = loader.getController();
         
