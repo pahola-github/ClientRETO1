@@ -5,6 +5,9 @@
  */
 package clientreto1;
 
+import clientreto1.controller.FXMLSignInController;
+import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,14 +20,19 @@ import javafx.stage.Stage;
  */
 public class ClientRETO1 extends Application {
     
+    private static final Logger LOGGER = Logger.getLogger("clientreto1");
+            
+    
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
+        LOGGER.info("Load of the view and the controller");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/SignIn.fxml"));
+        Parent root = (Parent)loader.load();
+        FXMLSignInController controller = loader.getController();
         
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.show();
+        LOGGER.info("Load complete");
+        controller.setStage(stage);
+        controller.initStage(root);
     }
 
     /**
