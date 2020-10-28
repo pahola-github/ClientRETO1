@@ -5,6 +5,7 @@
  */
 package clientreto1;
 
+import clientreto1.controller.FXMLLogOutController;
 import clientreto1.controller.FXMLSignInController;
 import java.util.logging.Logger;
 
@@ -26,8 +27,10 @@ public class ClientRETO1 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Load of the view and the controller");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/SignIn.fxml"));
+        //Probar ventanas: Cambio ("/clientreto1/[ventana].fxml"))
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/view/SignIn.fxml"));
         Parent root = (Parent)loader.load();
+        //Probar ventanas:FXML[nombre]Controller
         FXMLSignInController controller = loader.getController();
         
         LOGGER.info("Load complete");
