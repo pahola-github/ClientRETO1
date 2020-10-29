@@ -25,7 +25,7 @@ import model.User;
  *  Class to control the actions of the SignUp window
  * @author Bryssa
  */
-public class SignUpController {
+public class FXMLSignUpController {
     
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller");
