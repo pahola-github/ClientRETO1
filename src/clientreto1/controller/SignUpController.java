@@ -15,12 +15,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.User;
 
 /**
- *
+ *  Class to control the actions of the SignUp window
  * @author Bryssa
  */
 public class SignUpController {
@@ -52,6 +54,8 @@ public class SignUpController {
     private Label err_Password;
     @FXML
     private Label err_VerifyPass;
+    @FXML
+    private ProgressIndicator pri_progression;
     
     private Stage stage;
     
@@ -62,8 +66,9 @@ public class SignUpController {
     private boolean passOK =  false;
     private boolean verifyOK = false;
     
+    
     /**
-     * 
+     * Set the stage from the main
      * @param stage 
      */
     public void setStage(Stage stage) {
@@ -72,7 +77,7 @@ public class SignUpController {
     
     
     /**
-     * 
+     * Init method to set the stage, the action handlers and some properties
      * @param root 
      */
     public void initStage(Parent root) { 
@@ -85,35 +90,46 @@ public class SignUpController {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         
-        
+        //Sign Up button
         btn_SignUp.setDisable(true);
         btn_SignUp.setDefaultButton(true);
         btn_SignUp.setOnAction(this::handleButtonAction);
-       
-        txt_Username.requestFocus();
+        
+        //Back button
+        btn_Back.setOnAction(this::handleButtonAction);
+        
+        //Text Fields
         txt_Username.textProperty().addListener(this::handleTextChange);
-        
-        txt_Email.textProperty().addListener(this::handleTextChange);
-        
-        txt_Fullname.textProperty().addListener(this::handleTextChange);
-        
-        txt_Password.textProperty().addListener(this::handleTextChange);
-        
-        txt_VerifyPass.textProperty().addListener(this::handleTextChange);
-        
         stage.show();
+        txt_Email.textProperty().addListener(this::handleTextChange);
+        txt_Fullname.textProperty().addListener(this::handleTextChange);
+        txt_Password.textProperty().addListener(this::handleTextChange);
+        txt_VerifyPass.textProperty().addListener(this::handleTextChange);
+        txt_Username.requestFocus();
     }
     
-    
     /**
-     * 
-     * @param event 
+     * Method that handles the action of the buttons
+     * @param event of a button actioned
      */
     @FXML
     private void handleButtonAction(ActionEvent event) {
         if(event.getSource().equals(btn_SignUp)){
             LOGGER.info("SignUp button actioned!");
-            //TODO
+            
+            /*try{
+                User user = new User();
+                
+                user.setLogin(txt_Username.getText());
+                user.setEmail(txt_Email.getText());
+                user.setFullName(txt_Fullname.getText());
+                user.setPassword(txt_Password.getText());
+                
+                
+            }catch(){
+                
+            }*/
+            
         }
         if(event.getSource().equals(btn_Back)){
             LOGGER.info("Back button actioned");
@@ -124,7 +140,7 @@ public class SignUpController {
     
     
     /**
-     * 
+     * Method to check that the local data is right
      * @param observable
      * @param oldValue
      * @param newValue 
@@ -134,20 +150,17 @@ public class SignUpController {
         String errString = null;
         btn_SignUp.setDisable(true);
         
-        
-        
-        
         //Username local check
-        if(txt_Username.isFocused()){
+        if(txt_Username.isFocused()){ //If is focused
             usernameOK = false;
             if(txt_Username.getText().isEmpty()){//Field is empty
                 errString = "Username cannot be empty";
-            }else  if(!Pattern.matches("[a-zA-Z0-9]+",txt_Username.getText())){ //Sintax w/o especial characters or blankspaces
+            }else  if(!Pattern.matches("[a-zA-Z0-9]+",txt_Username.getText())){ //Syntax w/o especial characters or blankspaces
                 errString = "Username not valid \n (Only A-Z and 0-9)";
             }else if(txt_Username.getText().length()<6 
                     || txt_Username.getText().length()>20){ //Username length is between 6 and 20
                 errString = "Username must to be between \n 6 – 20 characters";
-            }else{//Username OK
+            }else{//If username is OK
                 errString = "";
                 usernameOK = true;
             }
@@ -155,15 +168,16 @@ public class SignUpController {
         }
         
         //Email local check
-        if(txt_Email.isFocused()){
-            if(txt_Email.getText().isEmpty()){
+        if(txt_Email.isFocused()){ //If is focused
+            emailOK = false;
+            if(txt_Email.getText().isEmpty()){ //Field is empty
                 errString = "Email cannot be empty";
-            }else if(!checkEmail(txt_Email.getText())){
+            }else if(!checkEmail(txt_Email.getText())){ //Syntax is correct callin  a method to verify
                 errString = "E-mail syntax. not valid\n(e.g. example@email.com)";
             }else if(txt_Email.getText().length()<6
-                    || txt_Email.getText().length()>30){
+                    || txt_Email.getText().length()>30){ //Email length is between 6 and 20
                 errString = "E-mail must to be between \n 6-30 characters";
-            }else{
+            }else{ //If email is OK
                 errString = "";
                 emailOK = true;
             }
@@ -171,17 +185,16 @@ public class SignUpController {
         }
         
         //Fullname local check
-        if(txt_Fullname.isFocused()){
+        if(txt_Fullname.isFocused()){ //If is focused
             nameOK = false;
-            
             if(txt_Fullname.getText().isEmpty()){//Field is empty
                 errString = "Fullname cannot be empty";
-            }else if(!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())){
+            }else if(!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())){ // 
                 errString = "Fullname not valid\n(Only A-Z and blankspaces)";
             }else if(txt_Fullname.getText().length()<5
-                    || txt_Fullname.getText().length()>50){
+                    || txt_Fullname.getText().length()>50){ //Fullname length is between 6 and 20
                 errString = "Fullname must to be between \n 5 – 50 characters";
-            }else{//Fullname OK
+            }else{//If fullname is OK
                 errString = "";
                 nameOK = true;
             }
@@ -189,14 +202,14 @@ public class SignUpController {
         }
         
         //Password local check
-        if(txt_Password.isFocused()){
+        if(txt_Password.isFocused()){ //If is focused
             passOK = false;
-            if(txt_Password.getText().isEmpty()){
+            if(txt_Password.getText().isEmpty()){ //Field is empty
                 errString = "Password cannot be empty";
             }else if(txt_Password.getText().length()<4
-                    || txt_Password.getText().length()>20){
+                    || txt_Password.getText().length()>20){ //Password length is between 4 and 20
                 errString = "Password must to be between \n 4 – 20 characters";
-            }else{
+            }else{ //If password is OK
                 errString = "";
                 passOK = true;
             }
@@ -204,30 +217,30 @@ public class SignUpController {
         }
         
         //Password verification local check
-        if(txt_VerifyPass.isFocused()){
+        if(txt_VerifyPass.isFocused() || txt_Password.isFocused()){//If is focused
             verifyOK = false;
-            if(!txt_VerifyPass.getText().equals(txt_Password.getText())){ //
+            if(!txt_VerifyPass.getText().equals(txt_Password.getText())){ //If password verification not matches the main password 
                 errString = "Passwords do not match,\n try again";
-            }else{
+            }else{ //If password verification is OK
                 errString = "";
                 verifyOK = true;
             }
             err_VerifyPass.setText(errString);
         }
+
+        int level = okLevel();//Gets the level of verification
         
-        //Final check, if all OK, enable SignUp button
-        if(usernameOK && emailOK && nameOK && passOK && verifyOK){
+        //Sets the progress in the indicator according to the level of verification
+        pri_progression.setProgress(0.2*level);
+
+        if(level == 5){//Final check, if all OK, enable SignUp button
             btn_SignUp.setDisable(false);
         }
-        
-        
-        
-        
     }
         
     /**
      * Method that checks if the email has "@" and "."
-     * @param email 
+     * @param email to check
      * @return the final result
      */
     private boolean checkEmail(String email){
@@ -241,11 +254,26 @@ public class SignUpController {
                 at = true;
             if(at && email.substring(letra, letra+1).equalsIgnoreCase("."))//Search for .
                 dot = true;
+            if(at && dot){//If has both, OK
+                ok = true;
+                break;
+            }
         }
-        if(at && dot)//If has both, OK
-         ok = true;
-        
         return ok;
     }
     
+    private int okLevel (){
+        int level = 0;
+        if(usernameOK)
+            level++;
+        if(emailOK)
+            level++;
+        if(nameOK)
+            level++;
+        if(passOK)
+            level++;
+        if(verifyOK)
+            level++;
+        return level;
+    }
 }
