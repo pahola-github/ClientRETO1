@@ -35,7 +35,7 @@ public class FXMLLogOutController {
      * 
      * @param root 
      */
-    public void initStage(Parent root){
+    public void initStage(Parent root, User user){
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("LogOut");

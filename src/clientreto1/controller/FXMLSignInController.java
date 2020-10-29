@@ -6,6 +6,7 @@
 package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
+import interfaces.Signeable;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,8 +57,8 @@ public class FXMLSignInController {
 
     private User user;
     
+   
     
-
     /**
      * Set stage for the login
      *
@@ -120,8 +121,16 @@ public class FXMLSignInController {
 
                 user.setLogin(txt_Login.getText());
                 user.setPassword(txt_Password.getText());
-                SigneableFactory.getSigneableImplementation().signIn(user);
-
+                Signeable sign = SigneableFactory.getSigneableImplementation();//IP y PORT
+                //SigneableFactory.getSigneableImplementation().signIn(user);
+                user = sign.signIn(user);
+                 FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/clientreto1/view/LogOut.fxml"));
+                 Parent root = (Parent) loader.load();
+                 FXMLLogOutController logOutController 
+                         = (FXMLLogOutController)loader.getController();
+                 logOutController.setStage(stage);
+                 logOutController.initStage(root,user);
             } catch (Exception ex) {
 
             }
@@ -199,6 +208,7 @@ public class FXMLSignInController {
 
     }
 
+    
     /**
      * Load the logOut xml and pass the control to it controller
      */
