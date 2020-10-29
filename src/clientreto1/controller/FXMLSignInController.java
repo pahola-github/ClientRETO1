@@ -6,6 +6,7 @@
 package clientreto1.controller;
 
 
+import clientreto1.logic.SigneableFactory;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,6 +110,17 @@ public class FXMLSignInController {
             //catch
                 //excepciones
             //TODO
+            
+            try{
+                User user = new User();
+                
+                user.setLogin(txt_Login.getText());
+                user.setPassword(txt_Password.getText());
+                SigneableFactory.getSigneableImplementation().signIn(user);
+                
+            }catch(Exception ex){
+                
+            }
         }
     }
     /**

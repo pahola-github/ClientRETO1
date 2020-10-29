@@ -16,9 +16,9 @@ import javafx.stage.Stage;
 
 /**
  * THIS "MAIN" CLASS IS ONLY FOR TEST SIGNUP CONTROLLER
- * @author Bryssa
+ * @author Bryssa and Paola
  */
-public class ClientRETO1 extends Application {
+public class FXApplication extends Application {
     
     private static final Logger LOGGER = Logger.getLogger("clientreto1");
             
