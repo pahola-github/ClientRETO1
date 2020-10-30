@@ -26,6 +26,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.User;
 
@@ -87,6 +88,7 @@ public class FXMLSignInController {
         //Set window's properties
         stage.setTitle("Login");
         stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
         //Set window's event handlers button
         btn_Login.setDisable(true);
         btn_Login.setDefaultButton(true);
