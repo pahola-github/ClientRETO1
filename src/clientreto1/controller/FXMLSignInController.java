@@ -6,7 +6,10 @@
 package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
-import interfaces.Signeable;
+import exceptions.InvalidPasswordException;
+import exceptions.MaxConnectionException;
+import exceptions.ServerException;
+import exceptions.UserNotExistException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -29,7 +33,7 @@ import model.User;
  * Login FXML Controller class
  *
  * @author Paola
- * @version 1.1
+ * @version 1.2
  */
 public class FXMLSignInController {
 
@@ -56,21 +60,23 @@ public class FXMLSignInController {
     private Stage stage;
 
     private User user;
-    
-   
-    
+
     /**
      * Set stage for the login
-     *
      * @param stage
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    
+    /**
+     * Set the logic for communication with the next layer
+     * 
+     */
+    
 
     /**
      * Set and initialize the stage and its properties.
-     *
      * @param root
      */
     public void initStage(Parent root) {
@@ -89,7 +95,7 @@ public class FXMLSignInController {
         txt_Login.requestFocus();
         txt_Login.textProperty().addListener(this::handleTextChanged);
         txt_Password.textProperty().addListener(this::handleTextChanged);
-        //
+        //Set window's event handlers link
         link_SignUp.setOnAction(this::handleSignUp);
         //Show the LogIn window
         stage.show();
@@ -97,7 +103,6 @@ public class FXMLSignInController {
 
     /**
      * Set atributes to the controls that it need in the window showing event
-     *
      * @param event
      */
     public void handleButtonAction(ActionEvent event) {
@@ -121,19 +126,46 @@ public class FXMLSignInController {
 
                 user.setLogin(txt_Login.getText());
                 user.setPassword(txt_Password.getText());
-                Signeable sign = SigneableFactory.getSigneableImplementation();//IP y PORT
-                //SigneableFactory.getSigneableImplementation().signIn(user);
-                user = sign.signIn(user);
-                 FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/clientreto1/view/LogOut.fxml"));
-                 Parent root = (Parent) loader.load();
-                 FXMLLogOutController logOutController 
-                         = (FXMLLogOutController)loader.getController();
-                 logOutController.setStage(stage);
-                 logOutController.initStage(root,user);
-            } catch (Exception ex) {
-
-            }
+                //Signeable signIn = SigneableFactory.getSigneableImplementation();//IP y PORT
+                SigneableFactory.getSigneableImplementation().signIn(user);
+                //user = signIn.signIn(user);
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/clientreto1/view/LogOut.fxml"));
+                Parent root = (Parent) loader.load();
+                FXMLLogOutController logOutController
+                        = (FXMLLogOutController) loader.getController();
+                logOutController.setStage(stage);
+                logOutController.initStage(root, user);
+            } catch (IOException ex) {
+                LOGGER.warning("FXMLSignInController : Exception on FXMLSignInController");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("Sorry, an error has ocurred");
+                alert.showAndWait();
+            } catch (UserNotExistException ex) {
+                LOGGER.warning("FXMLSignInController : Login not found");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login Error");
+                alert.setContentText("User does not exist");
+                alert.showAndWait();
+            } catch (ServerException ex) {
+                LOGGER.warning("FXMLSignInController : Server connection error");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Server Error");
+                alert.setContentText("Unable to connect with server");
+                alert.showAndWait();
+            } catch (InvalidPasswordException ex) {
+                LOGGER.warning("FXMLSignInController : Wrong Password");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Password Error");
+                alert.setContentText("Password does not exist");
+                alert.showAndWait();
+            }/*catch(MaxConnectionException ex){
+                LOGGER.warning("FXMLSignInController : Max Connection");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Connection Error");
+                alert.setContentText("The server has exceeded the maximun number of connection, try again in a few minutes.");
+            }*/
         }
     }
 
@@ -153,14 +185,14 @@ public class FXMLSignInController {
         String errStringPass = null;
 
         //.trim() remove spaces
-        //
+        //check if the txtfields are empty and if they are not, activate the button
         if (txt_Login.getText().trim().isEmpty()
                 || txt_Password.getText().trim().isEmpty()) {
             btn_Login.setDisable(true);
         } else {
             btn_Login.setDisable(false);
         }
-
+        //Parameters
         if (txt_Login.isFocused()) {
             if (txt_Login.getText().isEmpty()) {
                 errString = "";
@@ -201,15 +233,43 @@ public class FXMLSignInController {
             controller.setStage(signUpStage);
             //Pass the control to the controller
             controller.initStage(root);
-           
+
         } catch (IOException ex) {
-            Logger.getLogger(FXMLSignInController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "An error in the SignIn loader", ex);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Sorry, an error has ocurred");
+            alert.showAndWait();
         }
 
     }
 
-    
-    /**
-     * Load the logOut xml and pass the control to it controller
-     */
+    public void logOut(User user) {
+        //Create the loader for xml
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/clientreto1/view/LogOut.fxml"));
+        //Create the parent and load the tree
+        Parent root;
+        try {
+            root = (Parent) loader.load();
+            //Create stage
+            Stage logOutStage = new Stage();
+            //Load the controller
+            FXMLLogOutController controller = loader.getController();
+            //Set the stage and the user
+            controller.setStage(logOutStage);
+            controller.setUser(user);
+            //Pass the communication with the next layer
+            //PAss the control to the controller
+            controller.initStage(root, user);
+            //Hide this stage
+            stage.hide();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "An error in the SignIn loader", ex);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Sorry, an error has ocurred");
+            alert.showAndWait();
+        }
+    }
 }
