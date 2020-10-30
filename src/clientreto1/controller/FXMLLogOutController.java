@@ -32,7 +32,7 @@ import model.User;
 public class FXMLLogOutController {
 
      private static final Logger LOGGER = Logger
-            .getLogger("clientreto1.controller");
+            .getLogger("clientreto1.controller.FXMLLogOutController");
     
     @FXML
     private Button btn_LogOut;

@@ -48,7 +48,7 @@ import model.UserStatus;
 public class FXMLSignUpController {
 
     private static final Logger LOGGER = Logger
-            .getLogger("clientreto1.controller");
+            .getLogger("clientreto1.controller.FXMLSignUpController");
 
     @FXML
     private Button btn_SignUp;
