@@ -24,6 +24,7 @@ import model.User;
 
 /**
  * LogOut FXML class Controller
+ *
  * @author Paola
  * @version 1.2
  */
@@ -31,7 +32,7 @@ public class FXMLLogOutController {
 
     @FXML
     private Button btn_LogOut;
-    
+
     @FXML
     private Label lbl_NombreUsuario;
 
@@ -39,6 +40,7 @@ public class FXMLLogOutController {
 
     /**
      * Return user
+     *
      * @return
      */
     public User getUser() {
@@ -46,7 +48,8 @@ public class FXMLLogOutController {
     }
 
     /**
-     *  Set user for the LogOut
+     * Set user for the LogOut
+     *
      * @param user
      */
     public void setUser(User user) {
@@ -57,6 +60,7 @@ public class FXMLLogOutController {
 
     /**
      * Return stage
+     *
      * @return
      */
     public Stage getStage() {
@@ -65,6 +69,7 @@ public class FXMLLogOutController {
 
     /**
      * Set stage for the logOut
+     *
      * @param stage
      */
     public void setStage(Stage stage) {
@@ -73,17 +78,17 @@ public class FXMLLogOutController {
 
     /**
      * Set and initialize the stage and its properties.
+     *
      * @param root
      */
     public void initStage(Parent root, User user) {
         //Create a scene associated to to the parent root
         Scene scene = new Scene(root);
-         //Associate the scene with the stage
+        //Associate the scene with the stage
         stage.setScene(scene);
         //Set window's properties
         stage.setTitle("LogOut");
         stage.setResizable(false);
-        stage.initModality(Modality.WINDOW_MODAL);
         //Set window's event handlers button
         btn_LogOut.setOnAction(this::pushLogOut);
         //Set window's event handlers text
@@ -92,42 +97,46 @@ public class FXMLLogOutController {
         stage.onCloseRequestProperty().set(this::handleCloseRequest);
         stage.show();
     }
+
     /**
      * A popup appears, ask if you are sure you want to log out.
-     * @param event 
+     *
+     * @param event
      */
     private void pushLogOut(ActionEvent event) {
-       LOGGER.info("Return to SignIn");
-       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-       alert.setTitle("Log Out confirmation");
-       alert.setHeaderText("You are going to log out.");
-       alert.setContentText("Are you sure you want to logout?");
-       alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-       Optional<ButtonType> result = alert.showAndWait();
-       if(result.get()==ButtonType.YES) {//User click on YES)
-           stage.hide();
-       }else{
-           alert.close();
-       }
+        LOGGER.info("Return to SignIn");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Log Out confirmation");
+        alert.setHeaderText("You are going to log out.");
+        alert.setContentText("Are you sure you want to logout?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {//User click on YES)
+            stage.hide();
+        } else {
+            alert.close();
+        }
     }
+
     /**
      * A popup appears, ask if you are sure you want to close application.
-     * @param event 
+     *
+     * @param event
      */
-    private void handleCloseRequest(WindowEvent event){
+    private void handleCloseRequest(WindowEvent event) {
         LOGGER.info("Close Application");
-       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-       alert.setTitle("Close confirmation");
-       alert.setHeaderText("Application will be closed");
-       alert.setContentText("Are you sure?");
-       alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-       Optional<ButtonType> result = alert.showAndWait();
-       if(result.get()==ButtonType.YES) {//User click on YES)
-           stage.close();
-           Platform.exit();
-       }else{
-           alert.close();
-       }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Close confirmation");
+        alert.setHeaderText("Application will be closed");
+        alert.setContentText("Are you sure?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {//User click on YES)
+            stage.close();
+            Platform.exit();
+        } else {
+            alert.close();
+        }
     }
 
 }
