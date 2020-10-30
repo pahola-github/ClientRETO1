@@ -5,9 +5,10 @@
  */
 package clientreto1.controller;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+
 import java.util.Optional;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,6 +31,9 @@ import model.User;
  */
 public class FXMLLogOutController {
 
+     private static final Logger LOGGER = Logger
+            .getLogger("clientreto1.controller");
+    
     @FXML
     private Button btn_LogOut;
 

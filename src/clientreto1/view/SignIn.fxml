@@ -20,7 +20,7 @@
    <right>
       <Pane prefHeight="182.0" prefWidth="105.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btn_Login" disable="true" layoutY="143.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="53.0" text="Login" />
+            <Button fx:id="btn_Login" disable="true" layoutY="143.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Login" />
          </children>
       </Pane>
    </right>
@@ -49,8 +49,8 @@
          <children>
             <Pane prefHeight="26.0" prefWidth="452.0">
                <children>
-                  <Label layoutX="118.0" layoutY="17.0" text="Do you not have an account?" />
-                  <Hyperlink fx:id="link_SignUp" layoutX="274.0" layoutY="14.0" text="Click Here" />
+                  <Label layoutX="99.0" layoutY="17.0" prefHeight="17.0" prefWidth="176.0" text="Do you not have an account?" />
+                  <Hyperlink fx:id="link_SignUp" layoutX="274.0" layoutY="14.0" prefHeight="23.0" prefWidth="86.0" text="Click Here" />
                </children>
             </Pane>
          </children>

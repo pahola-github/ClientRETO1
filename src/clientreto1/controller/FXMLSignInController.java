@@ -71,12 +71,6 @@ public class FXMLSignInController {
     }
     
     /**
-     * Set the logic for communication with the next layer
-     * 
-     */
-    
-
-    /**
      * Set and initialize the stage and its properties.
      * @param root
      */
