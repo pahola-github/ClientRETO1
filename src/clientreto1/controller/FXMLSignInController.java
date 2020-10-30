@@ -43,7 +43,7 @@ public class FXMLSignInController {
      * application
      */
     private static final Logger LOGGER = Logger
-            .getLogger("clientreto1.controller");
+            .getLogger("clientreto1.controller.FXMLSignInController");
 
     @FXML
     private Label err_Login;
