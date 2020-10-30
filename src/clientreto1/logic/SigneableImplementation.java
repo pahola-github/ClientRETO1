@@ -6,10 +6,19 @@
 package clientreto1.logic;
 
 import exceptions.EmailExistException;
+import exceptions.InvalidPasswordException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
-import exceptions.UserOrPassNotExistException;
+import exceptions.UserNotExistException;
 import interfaces.Signeable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import message.Message;
+import message.MessageType;
 import model.User;
 
 /**
@@ -17,19 +26,98 @@ import model.User;
  * @author Paola and Bryssa
  */
 public class SigneableImplementation implements Signeable {
-    
-    public SigneableImplementation (){
-        
-    }
 
+    private final String HOST = "127.0.0.1";
+    private final Integer PORT = 60000;
+    private Socket sc;
+    private Message msg;
+    private Message reply;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    
+    public SigneableImplementation() {
+
+    }
+    
     @Override
-    public User signIn(User user) throws UserOrPassNotExistException, ServerException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
+
+        try {
+
+            sc = new Socket(HOST, PORT);
+          
+            out = new ObjectOutputStream(sc.getOutputStream());
+            in = new ObjectInputStream(sc.getInputStream());
+            
+            msg = new Message(user, MessageType.SIGNIN);
+
+            out.writeObject(msg);
+            
+            reply = (Message) in.readObject();
+
+        } catch (IOException ex) {
+
+            
+
+        } catch (ClassNotFoundException ex) {
+            
+            
+            
+        } finally {
+
+            try {
+
+                sc.close();
+
+            } catch (IOException ex) {
+
+                
+
+            }
+
+        }
+
+        return user;
     }
 
     @Override
     public User signUp(User user) throws UserExistException, EmailExistException, ServerException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+
+            sc = new Socket(HOST, PORT);
+
+            out = new ObjectOutputStream(sc.getOutputStream());
+
+            msg = new Message(user, MessageType.SIGNUP);
+
+            out.writeObject(msg);
+            
+            reply = (Message) in.readObject();
+
+        } catch (IOException ex) {
+
+            
+
+        } catch (ClassNotFoundException ex) {
+            
+            
+            
+        } finally {
+
+            try {
+
+                sc.close();
+
+            } catch (IOException ex) {
+
+                
+
+            }
+
+        }
+
+        return null;
+
     }
-    
+
 }
