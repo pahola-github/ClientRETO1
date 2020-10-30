@@ -23,6 +23,7 @@ import model.User;
 
 /**
  * Signeable implementation for getting the message from a bd.
+ *
  * @author Paola and Bryssa
  */
 public class SigneableImplementation implements Signeable {
@@ -44,33 +45,37 @@ public class SigneableImplementation implements Signeable {
     private Message reply;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    
-   
-    
+
+    /**
+     * 
+     * @param user
+     * @return
+     * @throws UserNotExistException
+     * @throws ServerException
+     * @throws InvalidPasswordException
+     */
     @Override
     public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
 
         try {
 
+
             sc = new Socket(IP, PORT);
           
+
             out = new ObjectOutputStream(sc.getOutputStream());
             in = new ObjectInputStream(sc.getInputStream());
-            
+
             msg = new Message(user, MessageType.SIGNIN);
 
             out.writeObject(msg);
-            
+
             reply = (Message) in.readObject();
 
         } catch (IOException ex) {
 
-            
-
         } catch (ClassNotFoundException ex) {
-            
-            
-            
+
         } finally {
 
             try {
@@ -79,8 +84,6 @@ public class SigneableImplementation implements Signeable {
 
             } catch (IOException ex) {
 
-                
-
             }
 
         }
@@ -88,6 +91,14 @@ public class SigneableImplementation implements Signeable {
         return user;
     }
 
+    /**
+     *
+     * @param user
+     * @return
+     * @throws UserExistException
+     * @throws EmailExistException
+     * @throws ServerException
+     */
     @Override
     public User signUp(User user) throws UserExistException, EmailExistException, ServerException {
         try {
@@ -99,17 +110,13 @@ public class SigneableImplementation implements Signeable {
             msg = new Message(user, MessageType.SIGNUP);
 
             out.writeObject(msg);
-            
+
             reply = (Message) in.readObject();
 
         } catch (IOException ex) {
 
-            
-
         } catch (ClassNotFoundException ex) {
-            
-            
-            
+
         } finally {
 
             try {
@@ -117,8 +124,6 @@ public class SigneableImplementation implements Signeable {
                 sc.close();
 
             } catch (IOException ex) {
-
-                
 
             }
 

@@ -26,6 +26,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.User;
 
@@ -42,7 +43,7 @@ public class FXMLSignInController {
      * application
      */
     private static final Logger LOGGER = Logger
-            .getLogger("clientreto1.controller");
+            .getLogger("clientreto1.controller.FXMLSignInController");
 
     @FXML
     private Label err_Login;
@@ -69,12 +70,6 @@ public class FXMLSignInController {
         this.stage = stage;
     }
     
-    /**
-     * Set the logic for communication with the next layer
-     * 
-     */
-    
-
     /**
      * Set and initialize the stage and its properties.
      * @param root
@@ -134,7 +129,8 @@ public class FXMLSignInController {
                 Parent root = (Parent) loader.load();
                 FXMLLogOutController logOutController
                         = (FXMLLogOutController) loader.getController();
-                logOutController.setStage(stage);
+                Stage logOutStage = new Stage();
+                logOutController.setStage(logOutStage);
                 logOutController.initStage(root, user);
             } catch (IOException ex) {
                 LOGGER.warning("FXMLSignInController : Exception on FXMLSignInController");
