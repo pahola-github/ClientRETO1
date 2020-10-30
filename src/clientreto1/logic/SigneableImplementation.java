@@ -22,7 +22,7 @@ import message.MessageType;
 import model.User;
 
 /**
- *
+ * Signeable implementation for getting the message from a bd.
  * @author Paola and Bryssa
  */
 public class SigneableImplementation implements Signeable {
@@ -36,6 +36,15 @@ public class SigneableImplementation implements Signeable {
     private ObjectOutputStream out;
     
     public SigneableImplementation() {
+    private final String HOST = "127.0.0.1";
+    private final Integer PORT = 60000;
+    
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private Socket sc;
+    
+    private Message msg;
+
 
     }
     

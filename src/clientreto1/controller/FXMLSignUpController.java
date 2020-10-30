@@ -5,11 +5,20 @@
  */
 package clientreto1.controller;
 
+import exceptions.EmailExistException;
+import exceptions.MaxConnectionException;
+import exceptions.ServerException;
+import exceptions.UserExistException;
+import interfaces.Signeable;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +35,10 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.User;
+import model.UserPrivilege;
+import model.UserStatus;
 
 /**
  * Class to control the actions of the SignUp window
@@ -105,6 +117,10 @@ public class FXMLSignUpController {
 
         //Back button
         btn_Back.setOnAction(this::handleButtonAction);
+        
+        //Red cross button
+        stage.onCloseRequestProperty().set(this::handleCloseRequest);
+        
 
         //Text Fields
         txt_Username.textProperty().addListener(this::handleTextChange);
@@ -123,41 +139,60 @@ public class FXMLSignUpController {
      */
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        if (event.getSource().equals(btn_SignUp)) {
+        if (event.getSource().equals(btn_SignUp)) { //Button SignUp
             LOGGER.info("SignUp button actioned!");
 
-            /*try{
+            try{
                 User user = new User();
                 
                 user.setLogin(txt_Username.getText());
                 user.setEmail(txt_Email.getText());
                 user.setFullName(txt_Fullname.getText());
                 user.setPassword(txt_Password.getText());
+                user.setPrivilege(UserPrivilege.USER);
+                user.setStatus(UserStatus.ENABLED);
+                user.setLastAccess(Date.valueOf(LocalDate.now()));
+                user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
+                
+                LOGGER.info("User created...Sending to server...");
+                Signeable client = null /*SigneableFactory.getClient(IP, PORT)*/;
+                user = client.signUp(user);
                 
                 
-            }catch(){
                 
-            }*/
-        }
-        if (event.getSource().equals(btn_Back)) {
-            LOGGER.info("Closing the window");
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Close confirmation");
-            alert.setHeaderText("Registration will be cancelled."
-                    + "\nAll the data will be erased.");
-            alert.setContentText("Are you sure?");
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.YES) {
-                stage.hide();
-            } else {
-                alert.close();
+            }/*catch(MaxConnectionException e){
+                
+            }*/catch(UserExistException e){
+                
+                
+                
+            }catch(EmailExistException e){
+                
+            }catch(ServerException e){
+                
+            }/*catch(IOException e){
+                
+            }*/catch(Exception e){
+                
             }
+        }
+        if (event.getSource().equals(btn_Back)) {//Button BACK
+            LOGGER.info("Back button actioned!");
+            closeAlert();
         }
     }
 
     /**
-     * Method to check that the local data is right
+     * Event handler, when the user click on the red cross button of the window
+     * @param event of the button
+     */
+    private void handleCloseRequest(WindowEvent event) {
+        LOGGER.info("Red cross button actioned!");
+        closeAlert();
+    }
+    
+    /**
+     * Method to check that the LOCAL data is right
      *
      * @param observable
      * @param oldValue
@@ -305,4 +340,63 @@ public class FXMLSignUpController {
         }
         return level;
     }
+    
+    
+    
+    /**
+     * 
+     * TODO
+     * DEPURAR ESTO
+     * juntar los tres metodos del alert mandando parametros para definir
+     * el tipo y los mensajes
+     * 
+     * ESTOS TRES METODOS SON SOLAMENTE TEMPORALES PARA PRUEBAS
+     * 
+     */
+    
+     /**
+     * Method to show an alert asking if the user is sure to return  to SignIn window
+     */
+    private void closeAlert (){
+        LOGGER.info("Return to SignIn");
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Close confirmation");
+        alert.setHeaderText("Registration will be cancelled."
+                + "\nAll the data will be erased.");
+        alert.setContentText("Are you sure?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {//User click on YES
+            stage.hide();
+        } else { //User click on NO
+            alert.close();
+        }
+    }
+    
+    private void popUpError(String msg){
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText("SignUp failed");
+        alert.setContentText(msg);
+        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setId("okbutton");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            stage.hide();
+        }
+    }
+    
+    private void popUpInfo(String msg){
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText("Information");
+        alert.setContentText(msg);
+        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setId("okbutton");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            stage.hide();
+        }
+    }
+    
 }

@@ -8,7 +8,7 @@ package clientreto1.logic;
 import interfaces.Signeable;
 
 /**
- *
+ * Return SigneableImplementation
  * @author Paola and Bryssa
  */
 public class SigneableFactory {
