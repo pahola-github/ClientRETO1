@@ -35,18 +35,7 @@ public class SigneableImplementation implements Signeable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     
-    public SigneableImplementation() {
-    private final String HOST = "127.0.0.1";
-    private final Integer PORT = 60000;
-    
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private Socket sc;
-    
-    private Message msg;
-
-
-    }
+   
     
     @Override
     public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
