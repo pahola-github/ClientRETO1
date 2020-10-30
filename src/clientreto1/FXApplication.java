@@ -13,6 +13,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import model.User;
 
 /**
  * THIS "MAIN" CLASS IS ONLY FOR TEST SIGNUP CONTROLLER
@@ -32,9 +33,12 @@ public class FXApplication extends Application {
         //Probar ventanas:FXML[nombre]Controller
         FXMLSignInController controller = loader.getController();
         
+        User user = new User();
+        user.setLogin("ElPepe");
         LOGGER.info("Load complete");
         controller.setStage(stage);
-        controller.initStage(root);
+        controller.initStage(root); //User
+        
     }
 
 
