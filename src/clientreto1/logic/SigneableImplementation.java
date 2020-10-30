@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import message.Message;
 import message.MessageType;
@@ -27,9 +27,19 @@ import model.User;
  * @author Paola and Bryssa
  */
 public class SigneableImplementation implements Signeable {
+    
+    private static final Logger LOGGER = Logger
+            .getLogger("clientreto1.logic");
 
-    private final String HOST = "127.0.0.1";
-    private final Integer PORT = 60000;
+    //Reading of the IP of the server in the properties file
+    private static final String IP = ResourceBundle.getBundle(
+            "clientreto1.logic.ServerProperties").getString("IP");
+
+   //Reading of the PORT of the server in the properties file
+    private static final int PORT = Integer.parseInt(ResourceBundle.getBundle(
+            "clientreto1.logic.ServerProperties").getString("PORT"));
+    
+    
     private Socket sc;
     private Message msg;
     private Message reply;
@@ -49,7 +59,9 @@ public class SigneableImplementation implements Signeable {
 
         try {
 
-            sc = new Socket(HOST, PORT);
+
+            sc = new Socket(IP, PORT);
+          
 
             out = new ObjectOutputStream(sc.getOutputStream());
             in = new ObjectInputStream(sc.getInputStream());
@@ -91,7 +103,7 @@ public class SigneableImplementation implements Signeable {
     public User signUp(User user) throws UserExistException, EmailExistException, ServerException {
         try {
 
-            sc = new Socket(HOST, PORT);
+            sc = new Socket(IP, PORT);
 
             out = new ObjectOutputStream(sc.getOutputStream());
 
