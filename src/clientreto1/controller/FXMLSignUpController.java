@@ -5,6 +5,7 @@
  */
 package clientreto1.controller;
 
+import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
 import exceptions.MaxConnectionException;
 import exceptions.ServerException;
@@ -15,6 +16,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -49,6 +51,7 @@ public class FXMLSignUpController {
 
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller");
+
 
     @FXML
     private Button btn_SignUp;
@@ -102,7 +105,7 @@ public class FXMLSignUpController {
      */
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
-        stage = new Stage();
+        //stage = new Stage();
         stage.setScene(scene);
 
         //Minor properties
@@ -142,9 +145,8 @@ public class FXMLSignUpController {
         if (event.getSource().equals(btn_SignUp)) { //Button SignUp
             LOGGER.info("SignUp button actioned!");
 
-            try{
+            try{//Try to connect with the server, if not, catch the exceptions and shows and error
                 User user = new User();
-                
                 user.setLogin(txt_Username.getText());
                 user.setEmail(txt_Email.getText());
                 user.setFullName(txt_Fullname.getText());
@@ -155,25 +157,32 @@ public class FXMLSignUpController {
                 user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
                 
                 LOGGER.info("User created...Sending to server...");
-                Signeable client = null /*SigneableFactory.getClient(IP, PORT)*/;
+                Signeable client = SigneableFactory.getSigneableImplementation();
                 user = client.signUp(user);
-                
+                popUpInfo("User created successfully.");
+                LOGGER.info("User Created");
                 
                 
             }/*catch(MaxConnectionException e){
-                
+                popUpError("Server is busy right now, "
+                         + "\n try again later.");
             }*/catch(UserExistException e){
-                
-                
-                
+                popUpError("User already exist.");
+                err_Username.setText("User already exist");
+                txt_Username.requestFocus();
             }catch(EmailExistException e){
-                
+                popUpError("Email already exist.");
+                err_Email.setText("Email already exist");
+                txt_Email.requestFocus();
             }catch(ServerException e){
-                
+                 popUpError("An error ocurred trying to sign up, "
+                         + "\n try again later.");
             }/*catch(IOException e){
-                
+                popUpError("An error ocurred trying to sign up, "
+                         + "\n try again later.");
             }*/catch(Exception e){
-                
+                popUpError("An error ocurred trying to sign up, "
+                         + "\n try again later.");
             }
         }
         if (event.getSource().equals(btn_Back)) {//Button BACK
@@ -301,43 +310,30 @@ public class FXMLSignUpController {
     private boolean checkEmail(String email) {
         boolean ok = false;
         boolean at = false;
-        boolean dot = false;
 
         //Verify the email, searching for "@" and "."
         for (int letra = 0; email.length() > letra; letra++) {
             if (email.substring(letra, letra + 1).equalsIgnoreCase("@"))//Search for @
-            {
                 at = true;
-            }
-            if (at && email.substring(letra, letra + 1).equalsIgnoreCase("."))//Search for .
-            {
-                dot = true;
-            }
-            if (at && dot) {//If has both, OK
-                ok = true;
-                break;
+            if (at && email.substring(letra, letra + 1).equalsIgnoreCase(".")){//Search for .
+                return ok=true;
             }
         }
         return ok;
     }
 
     private int okLevel() {
-        int level = 0;
-        if (usernameOK) {
+        Integer level = 0;
+        if (usernameOK) 
             level++;
-        }
-        if (emailOK) {
+        if (emailOK) 
             level++;
-        }
-        if (nameOK) {
+        if (nameOK) 
             level++;
-        }
-        if (passOK) {
+        if (passOK)
             level++;
-        }
-        if (verifyOK) {
+        if (verifyOK)
             level++;
-        }
         return level;
     }
     
