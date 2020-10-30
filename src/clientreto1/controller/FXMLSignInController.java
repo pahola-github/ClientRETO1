@@ -88,7 +88,6 @@ public class FXMLSignInController {
         //Set window's properties
         stage.setTitle("Login");
         stage.setResizable(false);
-        stage.initModality(Modality.APPLICATION_MODAL);
         //Set window's event handlers button
         btn_Login.setDisable(true);
         btn_Login.setDefaultButton(true);
@@ -136,7 +135,8 @@ public class FXMLSignInController {
                 Parent root = (Parent) loader.load();
                 FXMLLogOutController logOutController
                         = (FXMLLogOutController) loader.getController();
-                logOutController.setStage(stage);
+                Stage logOutStage = new Stage();
+                logOutController.setStage(logOutStage);
                 logOutController.initStage(root, user);
             } catch (IOException ex) {
                 LOGGER.warning("FXMLSignInController : Exception on FXMLSignInController");

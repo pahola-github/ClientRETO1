@@ -89,6 +89,7 @@ public class FXMLLogOutController {
         //Set window's properties
         stage.setTitle("LogOut");
         stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
         //Set window's event handlers button
         btn_LogOut.setOnAction(this::pushLogOut);
         //Set window's event handlers text

@@ -33,8 +33,8 @@ public class FXApplication extends Application {
         //Probar ventanas:FXML[nombre]Controller
         FXMLSignInController controller = loader.getController();
         
-        User user = new User();
-        user.setLogin("ElPepe");
+        
+       
         LOGGER.info("Load complete");
         controller.setStage(stage);
         controller.initStage(root); //User
