@@ -49,6 +49,8 @@ import model.UserStatus;
  */
 public class FXMLSignUpController {
 
+    private enum popUpType{ERROR,INFORMATION,CONFIRMATION}
+    
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller.FXMLSignUpController");
 
@@ -159,35 +161,35 @@ public class FXMLSignUpController {
                 LOGGER.info("User created...Sending to server...");
                 Signeable client = SigneableFactory.getSigneableImplementation();
                 user = client.signUp(user);
-                popUpInfo("User created successfully.");
+                popUp(popUpType.INFORMATION, "User created successfully");
                 LOGGER.info("User Created");
                 
                 
             }/*catch(MaxConnectionException e){
-                popUpError("Server is busy right now, "
+                popUp(popUpType.ERROR, "Server is busy right now, "
                          + "\n try again later.");
             }*/catch(UserExistException e){
-                popUpError("User already exist.");
+                popUp(popUpType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
             }catch(EmailExistException e){
-                popUpError("Email already exist.");
+                popUp(popUpType.ERROR, "Email already exist.");
                 err_Email.setText("Email already exist");
                 txt_Email.requestFocus();
             }catch(ServerException e){
-                 popUpError("An error ocurred trying to sign up, "
+                 popUp(popUpType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }/*catch(IOException e){
-                popUpError("An error ocurred trying to sign up, "
+                popUp(popUpType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }*/catch(Exception e){
-                popUpError("An error ocurred trying to sign up, "
+                popUp(popUpType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }
         }
         if (event.getSource().equals(btn_Back)) {//Button BACK
             LOGGER.info("Back button actioned!");
-            closeAlert();
+            popUp(popUpType.CONFIRMATION, "");
         }
     }
 
@@ -197,7 +199,8 @@ public class FXMLSignUpController {
      */
     private void handleCloseRequest(WindowEvent event) {
         LOGGER.info("Red cross button actioned!");
-        closeAlert();
+        popUp(popUpType.CONFIRMATION, "Registration will be cancelled."
+                + "\nAll the data will be erased.");
     }
     
     /**
@@ -350,17 +353,70 @@ public class FXMLSignUpController {
      * 
      */
     
+    
+    private void popUp(popUpType type, String msg){
+        LOGGER.info("Creating PopUp");
+        Alert alert = null;
+
+        switch(type){
+            case CONFIRMATION:
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                alert.setContentText("Are you sure?");
+                break;
+            case INFORMATION:
+                alert = new Alert(AlertType.INFORMATION);
+                alert.getButtonTypes().setAll(ButtonType.OK);
+                break;
+            case ERROR:
+                alert = new Alert(AlertType.ERROR);
+                alert.getButtonTypes().setAll(ButtonType.OK);
+                break;
+        }
+        alert.setTitle("PopUp!");
+        alert.setHeaderText(msg);
+        Optional<ButtonType> result = alert.showAndWait();
+        
+        if (result.get() == ButtonType.YES 
+                || result.get() == ButtonType.OK) {//User click on YES or OK
+            LOGGER.info("entra");
+            if(result.get() == ButtonType.YES)
+                stage.hide();
+            else
+                alert.close();
+                LOGGER.info("cuak");
+        } else { //User click on NO
+            alert.close();
+        }
+        
+        
+        
+        
+        if(type == popUpType.CONFIRMATION){
+            
+        }else if(type == popUpType.INFORMATION){
+            
+        }else{
+            
+        }
+
+    }
+    
+    
+    
      /**
      * Method to show an alert asking if the user is sure to return  to SignIn window
      */
-    private void closeAlert (){
+    /*private void closeAlert (){
         LOGGER.info("Return to SignIn");
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Close confirmation");
+        
         alert.setHeaderText("Registration will be cancelled."
                 + "\nAll the data will be erased.");
         alert.setContentText("Are you sure?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {//User click on YES
             stage.hide();
@@ -393,6 +449,6 @@ public class FXMLSignUpController {
         if (result.get() == ButtonType.OK) {
             stage.hide();
         }
-    }
+    }*/
     
 }
