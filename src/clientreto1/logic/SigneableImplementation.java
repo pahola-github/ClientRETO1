@@ -16,15 +16,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import message.Message;
 import message.MessageType;
 import model.User;
 
 /**
- * Signeable implementation for getting the message from a bd.
+ * Signeable implementation for send message to server and get the response from a database.
  *
- * @author Paola and Bryssa
+ * @author Gari
  */
 public class SigneableImplementation implements Signeable {
 
@@ -46,30 +47,30 @@ public class SigneableImplementation implements Signeable {
     private ObjectOutputStream out;
 
     /**
+     * .
      *
-     * @param user
-     * @return
-     * @throws UserNotExistException
-     * @throws ServerException
-     * @throws InvalidPasswordException
+     * @param u The User data that the client has introduced.
+     * @return The object with the user data
+     * @throws UserNotExistException An exception that shows an error if the user or password not exists.
+     * @throws ServerException An exception that shows an error if the server has an internal error.
      */
     @Override
     public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
 
         try {
 
-            sc = new Socket(IP, PORT);
+            sc = new Socket(IP, PORT); // Make the socket with our IP and PORT we will use to comunicate with the Server.
 
-            out = new ObjectOutputStream(sc.getOutputStream());
-            in = new ObjectInputStream(sc.getInputStream());
+            out = new ObjectOutputStream(sc.getOutputStream()); // Output object.
+            in = new ObjectInputStream(sc.getInputStream()); // Input object.
 
-            msg = new Message(user, MessageType.SIGNIN);
+            msg = new Message(user, MessageType.SIGNIN); // Make a message we will send with the user.
 
-            out.writeObject(msg);
+            out.writeObject(msg); // Send message to server.
 
-            reply = (Message) in.readObject();
+            reply = (Message) in.readObject(); // Read the response for the server.
 
-            switch (reply.getMessageType()) {
+            switch (reply.getMessageType()) { // Select the type of the reply message.
                 case USER_NOT_EXIST:
                     throw new UserNotExistException();
                 case SERVER_ERROR:
@@ -82,76 +83,92 @@ public class SigneableImplementation implements Signeable {
             }
 
         } catch (IOException ex) {
-            ex.getMessage();
+            
+            LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
+            
         } catch (ClassNotFoundException ex) {
-            ex.getMessage();
+            
+            LOGGER.log(Level.SEVERE, "Class not found error.", ex);
+            
         } finally {
 
             try {
 
-                sc.close();
-
+                sc.close(); // Close the socket.
+               
             } catch (IOException ex) {
-                ex.getMessage();
+                
+                LOGGER.log(Level.SEVERE, "Socket close error.", ex);
+                
             }
 
         }
 
-        return user;
+        return user; // Return the user to the controller.
     }
     /**
+     * .
      *
-     * @param user
-     * @return
-     * @throws UserExistException
-     * @throws EmailExistException
-     * @throws ServerException
+     * @param u The User data that the client has introduced.
+     * @return The object with the user data.
+     * @throws UserExistException An exception that shows an error if the user exists.
+     * @throws EmailExistException An exception that shows an error if the email exists.
+     * @throws ServerException An exception that shows an error if the server has an internal error.
      */
     @Override
     public User signUp(User user) throws UserExistException, EmailExistException, ServerException {
         try {
 
-            sc = new Socket(IP, PORT);
+            sc = new Socket(IP, PORT); // Make the socket with our IP and PORT we will use to comunicate with the Server.
             
-            out = new ObjectOutputStream(sc.getOutputStream());
-            in = new ObjectInputStream(sc.getInputStream());
+            out = new ObjectOutputStream(sc.getOutputStream()); // Output object.
+            in = new ObjectInputStream(sc.getInputStream()); // Input object.
 
-            msg = new Message(user, MessageType.SIGNUP);
+            msg = new Message(user, MessageType.SIGNUP); // Make a message we will send with the user.
 
-            out.writeObject(msg);
+            out.writeObject(msg); // Send message to server.
 
-            reply = (Message) in.readObject();
+            reply = (Message) in.readObject(); // Read the response for the server.
 
-            switch (reply.getMessageType()) {
+            switch (reply.getMessageType()) { // Select the type of the reply message.
+                
                 case USER_EXIST:
                     throw new UserExistException();
-                case SERVER_ERROR:
+                    
+                case SERVER_ERROR:                  
                     throw new ServerException();
+                    
                 case EMAIL_EXIST:
                     throw new EmailExistException();
+                    
                 default:
                     break;
 
             }
 
         } catch (IOException ex) {
-            ex.getMessage();
+            
+            LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
+            
         } catch (ClassNotFoundException ex) {
-            ex.getMessage();
+            
+            LOGGER.log(Level.SEVERE, "Class not found error.", ex);
+            
         } finally {
 
             try {
 
-                sc.close();
+                sc.close(); // Close the socket.
 
             } catch (IOException ex) {
-                ex.getMessage();
+                
+                LOGGER.log(Level.SEVERE, "Socket close error.", ex);
+                
             }
 
         }
 
-        return user;
-
+        return user; // Return the user to the controller.
     }
 
 }
