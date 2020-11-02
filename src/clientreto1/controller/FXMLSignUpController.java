@@ -14,17 +14,12 @@ import interfaces.Signeable;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -37,7 +32,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.StageStyle;
 import model.User;
 import model.UserPrivilege;
 import model.UserStatus;
@@ -48,7 +43,7 @@ import model.UserStatus;
  * @author Bryssa
  */
 public class FXMLSignUpController {
-
+    
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller.FXMLSignUpController");
 
@@ -92,7 +87,7 @@ public class FXMLSignUpController {
     /**
      * Set the stage from the main
      *
-     * @param stage
+     * @param stage of the window
      */
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -105,13 +100,13 @@ public class FXMLSignUpController {
      */
     public void initStage(Parent root) {
         Scene scene = new Scene(root);
-        //stage = new Stage();
         stage.setScene(scene);
 
-        //Minor properties
-        stage.setTitle("SignUp new User");
+        //Some properties of the stage
+        stage.setTitle("Sign Up window");
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
 
         //Sign Up button
         btn_SignUp.setDisable(true);
@@ -119,11 +114,7 @@ public class FXMLSignUpController {
         btn_SignUp.setOnAction(this::handleButtonAction);
 
         //Back button
-        btn_Back.setOnAction(this::handleButtonAction);
-        
-        //Red cross button
-        stage.onCloseRequestProperty().set(this::handleCloseRequest);
-        
+        btn_Back.setOnAction(this::handleButtonAction);        
 
         //Text Fields
         txt_Username.textProperty().addListener(this::handleTextChange);
@@ -143,6 +134,11 @@ public class FXMLSignUpController {
     @FXML
     private void handleButtonAction(ActionEvent event) {
         if (event.getSource().equals(btn_SignUp)) { //Button SignUp
+            /**
+             * Here starts the conn w the server, if something is wrong,
+             * the exception will be catched in the try/catch and
+             * shows the according error
+            */
             LOGGER.info("SignUp button actioned!");
 
             try{//Try to connect with the server, if not, catch the exceptions and shows and error
@@ -159,47 +155,38 @@ public class FXMLSignUpController {
                 LOGGER.info("User created...Sending to server...");
                 Signeable client = SigneableFactory.getSigneableImplementation();
                 user = client.signUp(user);
-                popUpInfo("User created successfully.");
                 LOGGER.info("User Created");
-                
-                
-            }/*catch(MaxConnectionException e){
-                popUpError("Server is busy right now, "
+                popUp(AlertType.INFORMATION, "User created successfully");
+
+            }/*catch(MaxConnectionException e){ //Max conns. occuped0
+                popUp(AlertType.ERROR, "Server is busy right now, "
                          + "\n try again later.");
-            }*/catch(UserExistException e){
-                popUpError("User already exist.");
+            }*/catch(UserExistException e){ //User already exist
+                popUp(AlertType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
-            }catch(EmailExistException e){
-                popUpError("Email already exist.");
+            }catch(EmailExistException e){ //Email already exist
+                popUp(AlertType.ERROR, "Email already exist.");
                 err_Email.setText("Email already exist");
                 txt_Email.requestFocus();
-            }catch(ServerException e){
-                 popUpError("An error ocurred trying to sign up, "
+            }catch(ServerException e){ //Server error / conn. failed
+                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
-            }/*catch(IOException e){
-                popUpError("An error ocurred trying to sign up, "
+            }/*catch(IOException e){ //Input - Output exception
+                popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
-            }*/catch(Exception e){
-                popUpError("An error ocurred trying to sign up, "
+            }*/catch(Exception e){  //Other exceptions
+                popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }
         }
         if (event.getSource().equals(btn_Back)) {//Button BACK
             LOGGER.info("Back button actioned!");
-            closeAlert();
+            popUp(AlertType.CONFIRMATION, "Registration will be cancelled."
+                + "\nAll the data will be erased.");
         }
     }
 
-    /**
-     * Event handler, when the user click on the red cross button of the window
-     * @param event of the button
-     */
-    private void handleCloseRequest(WindowEvent event) {
-        LOGGER.info("Red cross button actioned!");
-        closeAlert();
-    }
-    
     /**
      * Method to check that the LOCAL data is right
      *
@@ -303,7 +290,7 @@ public class FXMLSignUpController {
 
     /**
      * Method that checks if the email has "@" and "."
-     *
+     * 
      * @param email to check
      * @return the final result
      */
@@ -322,6 +309,11 @@ public class FXMLSignUpController {
         return ok;
     }
 
+    /**
+     * Method to verify if all the fields are right
+     * 
+     * @return the amount of right fields, 0 - all wrong / 5 - all right
+     */
     private int okLevel() {
         Integer level = 0;
         if (usernameOK) 
@@ -337,62 +329,36 @@ public class FXMLSignUpController {
         return level;
     }
     
-    
-    
     /**
+     * Method to build and show a requiered PopUp with parameters
      * 
-     * TODO
-     * DEPURAR ESTO
-     * juntar los tres metodos del alert mandando parametros para definir
-     * el tipo y los mensajes
-     * 
-     * ESTOS TRES METODOS SON SOLAMENTE TEMPORALES PARA PRUEBAS
-     * 
+     * @param type of Pop Up wanted -CONFIRMATION, INFORMATION, ERROR-
+     * @param msg Message to show in the Pop Up
      */
-    
-     /**
-     * Method to show an alert asking if the user is sure to return  to SignIn window
-     */
-    private void closeAlert (){
-        LOGGER.info("Return to SignIn");
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Close confirmation");
-        alert.setHeaderText("Registration will be cancelled."
-                + "\nAll the data will be erased.");
-        alert.setContentText("Are you sure?");
-        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.YES) {//User click on YES
-            stage.hide();
-        } else { //User click on NO
-            alert.close();
+    private void popUp(AlertType type, String msg){
+        LOGGER.info("Creating PopUp");
+        Alert alert = null;
+        alert = new Alert(type);
+
+        try{
+            if(type == AlertType.CONFIRMATION){ // Type of pop up is Confirmation
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                alert.setContentText("Are you sure?");
+            }else //Type of pop up is info or error
+                alert.getButtonTypes().setAll(ButtonType.OK);
+
+            alert.setTitle("PopUp!");
+            alert.setHeaderText(msg);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if(result.get() == ButtonType.YES){//Button YES
+                LOGGER.info("Entra en YES");
+                stage.hide();
+            }else //Button NO or OK
+                LOGGER.info("Entra en NO");
+                alert.close();
+        }catch(Exception e){
+            LOGGER.warning(e.getMessage());
         }
     }
-    
-    private void popUpError(String msg){
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("ERROR");
-        alert.setHeaderText("SignUp failed");
-        alert.setContentText(msg);
-        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-        okButton.setId("okbutton");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            stage.hide();
-        }
-    }
-    
-    private void popUpInfo(String msg){
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Info");
-        alert.setHeaderText("Information");
-        alert.setContentText(msg);
-        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-        okButton.setId("okbutton");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            stage.hide();
-        }
-    }
-    
 }
