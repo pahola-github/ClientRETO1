@@ -7,24 +7,17 @@ package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
-import exceptions.MaxConnectionException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
 import interfaces.Signeable;
-import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -157,8 +150,7 @@ public class FXMLSignUpController {
                 user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
                 
                 LOGGER.info("User created...Sending to server...");
-                Signeable client = SigneableFactory.getSigneableImplementation();
-                user = client.signUp(user);
+                SigneableFactory.getSigneableImplementation().signUp(user);
                 popUpInfo("User created successfully.");
                 LOGGER.info("User Created");
                 
@@ -393,6 +385,10 @@ public class FXMLSignUpController {
         if (result.get() == ButtonType.OK) {
             stage.hide();
         }
+    }
+
+    void start(Stage stage) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

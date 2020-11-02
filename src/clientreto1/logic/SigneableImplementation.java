@@ -27,7 +27,7 @@ import model.User;
  * @author Paola and Bryssa
  */
 public class SigneableImplementation implements Signeable {
-    
+
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.logic");
 
@@ -35,11 +35,10 @@ public class SigneableImplementation implements Signeable {
     private static final String IP = ResourceBundle.getBundle(
             "clientreto1.logic.ServerProperties").getString("IP");
 
-   //Reading of the PORT of the server in the properties file
+    //Reading of the PORT of the server in the properties file
     private static final int PORT = Integer.parseInt(ResourceBundle.getBundle(
             "clientreto1.logic.ServerProperties").getString("PORT"));
-    
-    
+
     private Socket sc;
     private Message msg;
     private Message reply;
@@ -47,7 +46,7 @@ public class SigneableImplementation implements Signeable {
     private ObjectOutputStream out;
 
     /**
-     * 
+     *
      * @param user
      * @return
      * @throws UserNotExistException
@@ -59,9 +58,7 @@ public class SigneableImplementation implements Signeable {
 
         try {
 
-
             sc = new Socket(IP, PORT);
-          
 
             out = new ObjectOutputStream(sc.getOutputStream());
             in = new ObjectInputStream(sc.getInputStream());
@@ -72,10 +69,22 @@ public class SigneableImplementation implements Signeable {
 
             reply = (Message) in.readObject();
 
+            switch (reply.getMessageType()) {
+                case USER_NOT_EXIST:
+                    throw new UserNotExistException();
+                case SERVER_ERROR:
+                    throw new ServerException();
+                case INVALID_PASSWORD:
+                    throw new InvalidPasswordException();
+                default:
+                    break;
+
+            }
+
         } catch (IOException ex) {
-
+            ex.getMessage();
         } catch (ClassNotFoundException ex) {
-
+            ex.getMessage();
         } finally {
 
             try {
@@ -83,14 +92,13 @@ public class SigneableImplementation implements Signeable {
                 sc.close();
 
             } catch (IOException ex) {
-
+                ex.getMessage();
             }
 
         }
 
         return user;
     }
-
     /**
      *
      * @param user
@@ -104,8 +112,9 @@ public class SigneableImplementation implements Signeable {
         try {
 
             sc = new Socket(IP, PORT);
-
+            
             out = new ObjectOutputStream(sc.getOutputStream());
+            in = new ObjectInputStream(sc.getInputStream());
 
             msg = new Message(user, MessageType.SIGNUP);
 
@@ -113,10 +122,22 @@ public class SigneableImplementation implements Signeable {
 
             reply = (Message) in.readObject();
 
+            switch (reply.getMessageType()) {
+                case USER_EXIST:
+                    throw new UserExistException();
+                case SERVER_ERROR:
+                    throw new ServerException();
+                case EMAIL_EXIST:
+                    throw new EmailExistException();
+                default:
+                    break;
+
+            }
+
         } catch (IOException ex) {
-
+            ex.getMessage();
         } catch (ClassNotFoundException ex) {
-
+            ex.getMessage();
         } finally {
 
             try {
@@ -124,12 +145,12 @@ public class SigneableImplementation implements Signeable {
                 sc.close();
 
             } catch (IOException ex) {
-
+                ex.getMessage();
             }
 
         }
 
-        return null;
+        return user;
 
     }
 
