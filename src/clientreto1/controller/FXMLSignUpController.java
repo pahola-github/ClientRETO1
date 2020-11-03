@@ -150,10 +150,8 @@ public class FXMLSignUpController {
                 user.setLastAccess(Date.valueOf(LocalDate.now()));
                 user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
                 
-                LOGGER.info("User created...Sending to server...");
+                LOGGER.info("User generated...Sending to server...");
                 SigneableFactory.getSigneableImplementation().signUp(user);
-                popUpInfo("User created successfully.");
-
                 LOGGER.info("User Created");
                 popUp(AlertType.INFORMATION, "User created successfully");
 
