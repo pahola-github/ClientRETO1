@@ -27,21 +27,22 @@ public class FXApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Load of the view and the controller");
-        //Probar ventanas: Cambio ("/clientreto1/[ventana].fxml"))
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/view/SignIn.fxml"));
         Parent root = (Parent)loader.load();
-        //Probar ventanas:FXML[nombre]Controller
         FXMLSignInController controller = loader.getController();
         
         
        
         LOGGER.info("Load complete");
         controller.setStage(stage);
-        controller.initStage(root); //User
+        controller.initStage(root); 
         
     }
 
-
+    /**
+     * Launch main
+     * @param args 
+     */
     public static void main(String[] args) {
         launch(args);
     }
