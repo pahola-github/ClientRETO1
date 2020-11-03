@@ -49,10 +49,11 @@ public class SigneableImplementation implements Signeable {
     /**
      * .
      *
-     * @param u The User data that the client has introduced.
+     * @param user The User data that the client has introduced.
      * @return The object with the user data
-     * @throws UserNotExistException An exception that shows an error if the user or password not exists.
+     * @throws UserNotExistException An exception that shows an error if the user not exists.
      * @throws ServerException An exception that shows an error if the server has an internal error.
+     * @throws InvalidPasswordException An exception that shows an error if the password is incorrect.
      */
     @Override
     public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
@@ -109,7 +110,7 @@ public class SigneableImplementation implements Signeable {
     /**
      * .
      *
-     * @param u The User data that the client has introduced.
+     * @param user The User data that the client has introduced.
      * @return The object with the user data.
      * @throws UserExistException An exception that shows an error if the user exists.
      * @throws EmailExistException An exception that shows an error if the email exists.
