@@ -13,10 +13,12 @@ import interfaces.Signeable;
  */
 public class SigneableFactory {
     
+    /**
+     * Method to return the implementation of the interface
+     * @return the implementation of the interface
+     */
     public static Signeable getSigneableImplementation(){
-        
         return new SigneableImplementation();
-        
     }
     
 }
