@@ -70,7 +70,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
     @Test
     public void test4_UserNotExists() {
 
-        //Si existe el usuario y la password, le da acceso a la ventana main.
+        //Si  el usuario o la password no existen, le da acceso a la ventana main.
         clickOn("#txt_Login");
         write("aingeruuu");
         clickOn("#txt_Password");
