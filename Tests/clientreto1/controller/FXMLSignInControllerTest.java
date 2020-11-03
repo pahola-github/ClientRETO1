@@ -54,15 +54,50 @@ public class FXMLSignInControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void test3_LoginButtonPulsation() {
+    public void test3_MainClassIsVisible() {
+
+        //Si existe el usuario y la password, le da acceso a la ventana main.
+        clickOn("#txt_Login");
+        write("aingeru");
+        clickOn("#txt_Password");
+        write("abcd*1234");
+        clickOn("#btn_Login");
+        verifyThat("#logoutPane", isVisible());
+        clickOn("#btn_LogOut");
+        clickOn("Sí");
+        }
+
+    @Test
+    public void test4_UserNotExists() {
+
+        //Si  el usuario o la password no existen, le da acceso a la ventana main.
+        clickOn("#txt_Login");
+        write("aingeruuu");
+        clickOn("#txt_Password");
+        write("abcd*1234");
+        clickOn("#btn_Login");
+        verifyThat("#logoutPane",isNull());
+        clickOn("Aceptar");
+        
+        }
+    
+    @Test
+    public void test5_MainClassIsVisible() {
+        clickOn("#txt_Login");
+        write("asdadsa");
+        clickOn("#txt_Password");
+        write("asdadsa");
+        clickOn("#btn_Login");
+        verifyThat("#logoutPane", isNull());
+        
+        //Error usar un minimo de 6 caracteres
         clickOn("#txt_Login");
         write("as");
-        //Error usar un minimo de 6 caracteres
         verifyThat("#err_Login", isVisible());
         eraseText(2);
-        clickOn("#txt_Login");
-        write("aaaaaaaaaaaaaaaaaaaaa");   
         //Error usar un máximo de 20 caracteres en user
+        clickOn("#txt_Login");
+        write("aaaaaaaaaaaaaaaaaaaaa");
         verifyThat("#err_Login", isVisible());
         eraseText(21);
         //Error usar caracteres invalidos
@@ -70,12 +105,19 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         write("as@");
         verifyThat("#err_Login", isVisible());
         eraseText(3);
-         //Error usar un máximo de 20 caracteres en password
+        //Error usar un máximo de 20 caracteres en password
         clickOn("#txt_Password");
-        write("aaaaaaaaaaaaaaaaaaaaa"); 
+        write("aaaaaaaaaaaaaaaaaaaaa");
         verifyThat("#err_Password", isVisible());
         eraseText(21);
 
     }
+     @Test
+    public void test6_HyperLinkCanBePulsed() {
+
+         clickOn("#link_SignUp");
+         verifyThat("#txt_VerifyPass", isVisible());
+        
+        }
 
 }

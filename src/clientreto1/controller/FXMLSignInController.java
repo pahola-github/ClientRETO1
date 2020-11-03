@@ -7,7 +7,6 @@ package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
 import exceptions.InvalidPasswordException;
-import exceptions.MaxConnectionException;
 import exceptions.ServerException;
 import exceptions.UserNotExistException;
 import java.io.IOException;
