@@ -190,9 +190,9 @@ public class FXMLSignUpController {
     /**
      * Method to check that the LOCAL data is right
      *
-     * @param observable
-     * @param oldValue
-     * @param newValue
+     * @param observable the type of the value
+     * @param oldValue old value of the event
+     * @param newValue new value of the event
      */
     private void handleTextChange(ObservableValue observable, String oldValue, String newValue) {
         String errString = null;
