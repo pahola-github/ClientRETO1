@@ -47,7 +47,7 @@ public class SigneableImplementation implements Signeable {
     private ObjectOutputStream out;
 
     /**
-     * .
+     * SignIn method to connect with the server
      *
      * @param user The User data that the client has introduced.
      * @return The object with the user data
@@ -108,7 +108,7 @@ public class SigneableImplementation implements Signeable {
         return user; // Return the user to the controller.
     }
     /**
-     * .
+     * SignUp method to connecto with the server
      *
      * @param user The User data that the client has introduced.
      * @return The object with the user data.
