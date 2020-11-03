@@ -7,11 +7,9 @@ package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
-import exceptions.MaxConnectionException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
 import interfaces.Signeable;
-import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -153,8 +151,9 @@ public class FXMLSignUpController {
                 user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
                 
                 LOGGER.info("User created...Sending to server...");
-                Signeable client = SigneableFactory.getSigneableImplementation();
-                user = client.signUp(user);
+                SigneableFactory.getSigneableImplementation().signUp(user);
+                popUpInfo("User created successfully.");
+
                 LOGGER.info("User Created");
                 popUp(AlertType.INFORMATION, "User created successfully");
 
