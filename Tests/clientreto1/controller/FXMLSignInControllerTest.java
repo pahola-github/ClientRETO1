@@ -16,15 +16,10 @@ import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.matcher.base.NodeMatchers.isNull;
-import static org.testfx.matcher.base.NodeMatchers.isInvisible;
-import static org.testfx.matcher.base.NodeMatchers.isNotFocused;
-import static org.testfx.matcher.base.NodeMatchers.isFocused;
-import static org.testfx.matcher.base.NodeMatchers.isNotNull;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 /**
- *
+ * This class contains all the tests of the SignIn Controller.
  * @author Aingeru
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -35,7 +30,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
         new FXApplication().start(stage);
     }
-
+    
     @Test
     public void test1_Initialization() {
 
@@ -54,7 +49,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void test3_MainClassIsVisible() {
+    public void test3_UserExists() {
 
         //Si existe el usuario y la password, le da acceso a la ventana main.
         clickOn("#txt_Login");
@@ -76,20 +71,25 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         clickOn("#txt_Password");
         write("abcd*1234");
         clickOn("#btn_Login");
-        verifyThat("#logoutPane",isNull());
+        verifyThat("User does not exist",isVisible());
         clickOn("Aceptar");
         
         }
+     
     
     @Test
-    public void test5_MainClassIsVisible() {
+    public void test5_PasswordIsIncorrect() {
         clickOn("#txt_Login");
-        write("asdadsa");
+        write("aingeru");
         clickOn("#txt_Password");
         write("asdadsa");
         clickOn("#btn_Login");
-        verifyThat("#logoutPane", isNull());
+        verifyThat("Password does not exist", isVisible());
+        clickOn("Aceptar");
         
+    }
+    @Test
+    public void test6_LoginOrPasswordFieldsDataIsIncorrect() {
         //Error usar un minimo de 6 caracteres
         clickOn("#txt_Login");
         write("as");
@@ -113,10 +113,10 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
     }
      @Test
-    public void test6_HyperLinkCanBePulsed() {
+    public void test7_HyperLinkCanBePulsed() {
 
          clickOn("#link_SignUp");
-         verifyThat("#txt_VerifyPass", isVisible());
+         verifyThat("#signupPane", isVisible());
         
         }
 
