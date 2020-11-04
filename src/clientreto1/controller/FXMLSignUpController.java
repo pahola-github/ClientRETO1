@@ -9,7 +9,6 @@ import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
-import interfaces.Signeable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;

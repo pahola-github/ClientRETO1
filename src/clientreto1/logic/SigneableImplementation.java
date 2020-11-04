@@ -62,14 +62,12 @@ public class SigneableImplementation implements Signeable {
 
             sc = new Socket(IP, PORT); // Make the socket with our IP and PORT we will use to comunicate with the Server.
 
-            out = new ObjectOutputStream(sc.getOutputStream()); // Output object.
-            in = new ObjectInputStream(sc.getInputStream()); // Input object.
-
             msg = new Message(user, MessageType.SIGNIN); // Make a message we will send with the user.
 
-            out.writeObject(msg); // Send message to server.
+            SigneableImplementationThread thread = new SigneableImplementationThread(sc, msg);
+            thread.join();
 
-            reply = (Message) in.readObject(); // Read the response for the server.
+            reply = thread.getReply(); // Read the response for the server.
 
             switch (reply.getMessageType()) { // Select the type of the reply message.
                 case USER_NOT_EXIST:
@@ -84,29 +82,28 @@ public class SigneableImplementation implements Signeable {
             }
 
         } catch (IOException ex) {
-            
+
             LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
-            
-        } catch (ClassNotFoundException ex) {
-            
-            LOGGER.log(Level.SEVERE, "Class not found error.", ex);
-            
+
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "Syncronize error.", ex);
         } finally {
 
             try {
 
                 sc.close(); // Close the socket.
-               
+
             } catch (IOException ex) {
-                
+
                 LOGGER.log(Level.SEVERE, "Socket close error.", ex);
-                
+
             }
 
         }
 
         return user; // Return the user to the controller.
     }
+
     /**
      * SignUp method to connecto with the server
      *
@@ -121,40 +118,36 @@ public class SigneableImplementation implements Signeable {
         try {
 
             sc = new Socket(IP, PORT); // Make the socket with our IP and PORT we will use to comunicate with the Server.
-            
-            out = new ObjectOutputStream(sc.getOutputStream()); // Output object.
-            in = new ObjectInputStream(sc.getInputStream()); // Input object.
 
             msg = new Message(user, MessageType.SIGNUP); // Make a message we will send with the user.
 
-            out.writeObject(msg); // Send message to server.
+            SigneableImplementationThread thread = new SigneableImplementationThread(sc, msg);
+            thread.join();
 
-            reply = (Message) in.readObject(); // Read the response for the server.
+            reply = thread.getReply(); // Read the response for the server.
 
             switch (reply.getMessageType()) { // Select the type of the reply message.
-                
+
                 case USER_EXIST:
                     throw new UserExistException();
-                    
-                case SERVER_ERROR:                  
+
+                case SERVER_ERROR:
                     throw new ServerException();
-                    
+
                 case EMAIL_EXIST:
                     throw new EmailExistException();
-                    
+
                 default:
                     break;
 
             }
 
         } catch (IOException ex) {
-            
+
             LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
-            
-        } catch (ClassNotFoundException ex) {
-            
-            LOGGER.log(Level.SEVERE, "Class not found error.", ex);
-            
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SigneableImplementation.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
 
             try {
@@ -162,9 +155,9 @@ public class SigneableImplementation implements Signeable {
                 sc.close(); // Close the socket.
 
             } catch (IOException ex) {
-                
+
                 LOGGER.log(Level.SEVERE, "Socket close error.", ex);
-                
+
             }
 
         }
