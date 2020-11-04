@@ -7,7 +7,6 @@ package clientreto1.controller;
 
 
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

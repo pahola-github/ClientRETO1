@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import javafx.stage.Stage;
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
@@ -28,13 +29,19 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         clickOn("#link_SignUp");
     }
 
+    @After
+    public void closeSignUpWindow() {
+        clickOn("#btn_Back");
+        clickOn("Sí");
+    }
+
     @Test
     public void testA_Initialization() {
 
         verifyThat("#txt_Username", hasText(""));
         verifyThat("#txt_Email", hasText(""));
         verifyThat("#txt_Fullname", hasText(""));
-        verifyThat("#txt_Password", hasText(""));
+        verifyThat("#txt_PasswordSU", hasText(""));
         verifyThat("#txt_VerifyPass", hasText(""));
 
         verifyThat("#txt_Username", isFocused());
@@ -61,7 +68,7 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         verifyThat("#btn_SignUp", isDisabled());
         eraseText(9);
 
-        clickOn("#txt_Password");
+        clickOn("#txt_PasswordSU");
         write("username");
         verifyThat("#btn_SignUp", isDisabled());
         eraseText(8);
@@ -72,31 +79,30 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         eraseText(8);
 
     }
-
     @Test
     public void testC_SignUpButtonIsEnabled() {
-        
+
         clickOn("#txt_Username");
-        write("username"); 
-        
-        clickOn("#txt_Password");
         write("username");
-        
+
         clickOn("#txt_Email");
-        write("username@email.com");     
+        write("username@email.com");
 
         clickOn("#txt_Fullname");
-        write("User Name");       
-             
-        clickOn("#txt_VerifyPass");
+        write("User Name");
+        
+        clickOn("#txt_PasswordSU");
         write("username");
         
+        clickOn("#txt_VerifyPass");
+        write("username");
+
         verifyThat("#btn_SignUp", isEnabled());
-        
+
     }
-    
+
     @Test
-    public void testD_VerificarCamposDeTexto(){
+    public void testD_TextFieldVerify(){
         
         clickOn("#txt_Username"); // Comprueba error cuando tengo menos de 6 caracteres.
         write("asd");
@@ -133,12 +139,12 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         verifyThat("#err_Fullname", isVisible());
         eraseText(58);
         
-        clickOn("#txt_Password"); // Comprueba error cuando tengo menos de 4 caracteres.
+        clickOn("#txt_PasswordSU"); // Comprueba error cuando tengo menos de 4 caracteres.
         write("asd");
         verifyThat("#err_Password", isVisible());
         eraseText(3);
         
-        clickOn("#txt_Password");
+        clickOn("#txt_PasswordSU");
         write("aaaaaaaaaaaaaaaaaaaaaaaaaa"); // Comprueba error cuando tengo más de 20 caracteres.
         verifyThat("#err_Password", isVisible());
         eraseText(26);
@@ -148,7 +154,7 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
     @Test
     public void testE_VerifyPassword(){
         
-        clickOn("#txt_Password");
+        clickOn("#txt_PasswordSU");
         write("abcd*1234"); // Comprueba error cuando tengo más de 20 caracteres.
         
         clickOn("#txt_VerifyPass");
@@ -158,12 +164,12 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
     }
     
     @Test
-    public void testF_UserExist(){
+    public void testF_UserExistErrorVerify(){
         
         clickOn("#txt_Username");
         write("garikoitz"); 
         
-        clickOn("#txt_Password");
+        clickOn("#txt_PasswordSU");
         write("abcd*1234");
         
         clickOn("#txt_Email");
@@ -175,30 +181,56 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         clickOn("#txt_VerifyPass");
         write("abcd*1234");
         
-        verifyThat("#btn_SignUp", isEnabled());
+        clickOn("#btn_SignUp");
+        verifyThat("User already exist.", isVisible());
+        clickOn("Aceptar");
         
     }
-    
     @Test
-    public void testG_NewUser(){
-        
+    public void testG_EmailExistErrorVerify() {
+
         clickOn("#txt_Username");
-        write("garikoitz"); 
+        write("username");
         
-        clickOn("#txt_Password");
+        clickOn("#txt_PasswordSU");
         write("abcd*1234");
         
         clickOn("#txt_Email");
-        write("gari@gmail.com");     
+        write("gari@gmail.com");
 
         clickOn("#txt_Fullname");
-        write("Garikoitz Salgado");       
-             
+        write("Garikoitz Salgado");
+               
+        clickOn("#txt_VerifyPass");
+        write("abcd*1234");
+
+        clickOn("#btn_SignUp");
+        verifyThat("Email already exist.", isVisible());
+        clickOn("Aceptar");
+
+    }
+
+    @Test
+    public void testH_UserCreatedVerify(){
+        
+        clickOn("#txt_Username");
+        write("signUpTest"); 
+        
+        clickOn("#txt_Email");
+        write("signUpTest@gmail.com");     
+
+        clickOn("#txt_Fullname");
+        write("SignUp Test");       
+        
+        clickOn("#txt_PasswordSU");
+        write("abcd*1234");
+        
         clickOn("#txt_VerifyPass");
         write("abcd*1234");
         
-        verifyThat("#btn_SignUp", isEnabled());
+        clickOn("#btn_SignUp");
+        verifyThat("User created successfully", isVisible());
+        clickOn("Aceptar");
         
     }
-
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import message.Message;
 
 /**
@@ -17,6 +19,7 @@ public class SigneableImplementationThread extends Thread {
     private Message reply;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private static final Logger LOGGER = Logger.getLogger(SigneableImplementationThread.class.getName());
 
     public SigneableImplementationThread(Socket sc, Message msg) {
         this.sc = sc;
@@ -36,8 +39,12 @@ public class SigneableImplementationThread extends Thread {
             reply = (Message) in.readObject(); // Read the response for the server.
 
         } catch (IOException ex) {
-
+            
+            LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
+            
         } catch (ClassNotFoundException ex) {
+            
+            LOGGER.log(Level.SEVERE, "Class not found error.", ex);
             
         }
 
