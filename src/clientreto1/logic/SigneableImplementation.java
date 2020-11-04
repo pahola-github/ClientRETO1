@@ -31,14 +31,17 @@ public class SigneableImplementation implements Signeable {
 
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.logic");
+    
+    //Path of the properties file
+    private static final String properties = "clientreto1.resources.ServerProperties";
 
     //Reading of the IP of the server in the properties file
-    private static final String IP = ResourceBundle.getBundle(
-            "clientreto1.logic.ServerProperties").getString("IP");
+    private static final String IP = ResourceBundle
+            .getBundle(properties).getString("IP");
 
     //Reading of the PORT of the server in the properties file
-    private static final int PORT = Integer.parseInt(ResourceBundle.getBundle(
-            "clientreto1.logic.ServerProperties").getString("PORT"));
+    private static final int PORT = Integer.parseInt(ResourceBundle
+            .getBundle(properties).getString("PORT"));
 
     private Socket sc;
     private Message msg;
@@ -59,7 +62,6 @@ public class SigneableImplementation implements Signeable {
     public User signIn(User user) throws UserNotExistException, ServerException, InvalidPasswordException {
 
         try {
-
             sc = new Socket(IP, PORT); // Make the socket with our IP and PORT we will use to comunicate with the Server.
 
             msg = new Message(user, MessageType.SIGNIN); // Make a message we will send with the user.
@@ -72,33 +74,31 @@ public class SigneableImplementation implements Signeable {
             switch (reply.getMessageType()) { // Select the type of the reply message.
                 case USER_NOT_EXIST:
                     throw new UserNotExistException();
-                case SERVER_ERROR:
+                case SERVER_ERROR:                  
                     throw new ServerException();
                 case INVALID_PASSWORD:
                     throw new InvalidPasswordException();
                 default:
                     break;
-
             }
-
         } catch (IOException ex) {
 
             LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
 
         } catch (InterruptedException ex) {
+          
             LOGGER.log(Level.SEVERE, "Syncronize error.", ex);
+          
         } finally {
-
             try {
-
+              
                 sc.close(); // Close the socket.
 
             } catch (IOException ex) {
 
                 LOGGER.log(Level.SEVERE, "Socket close error.", ex);
 
-            }
-
+           }
         }
 
         return user; // Return the user to the controller.
@@ -147,7 +147,7 @@ public class SigneableImplementation implements Signeable {
             LOGGER.log(Level.SEVERE, "Input/Output error.", ex);
 
         } catch (InterruptedException ex) {
-            Logger.getLogger(SigneableImplementation.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Syncronize error.", ex);
         } finally {
 
             try {
@@ -164,5 +164,5 @@ public class SigneableImplementation implements Signeable {
 
         return user; // Return the user to the controller.
     }
-
+    
 }

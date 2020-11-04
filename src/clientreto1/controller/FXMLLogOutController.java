@@ -85,19 +85,19 @@ public class FXMLLogOutController {
      * @param root
      */
     public void initStage(Parent root, User user) {
-        //Create a scene associated to to the parent root
+            //Create a scene associated to to the parent root
         Scene scene = new Scene(root);
-        //Associate the scene with the stage
+            //Associate the scene with the stage
         stage.setScene(scene);
-        //Set window's properties
+            //Set window's properties
         stage.setTitle("LogOut");
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
-        //Set window's event handlers button
+            //Set window's event handlers button
         btn_LogOut.setOnAction(this::pushLogOut);
-        //Set window's event handlers text
+            //Set window's event handlers text
         lbl_NombreUsuario.setText(user.getLogin());
-        //Show the LogOut window
+            //Show the LogOut window
         stage.onCloseRequestProperty().set(this::handleCloseRequest);
         stage.show();
     }
@@ -115,7 +115,7 @@ public class FXMLLogOutController {
         alert.setContentText("Are you sure you want to logout?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.YES) {//User click on YES)
+        if (result.get() == ButtonType.YES) {
             stage.hide();
         } else {
             alert.close();
@@ -135,7 +135,7 @@ public class FXMLLogOutController {
         alert.setContentText("Are you sure?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.YES) {//User click on YES)
+        if (result.get() == ButtonType.YES) {
             stage.close();
             Platform.exit();
         } else {

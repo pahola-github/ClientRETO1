@@ -7,7 +7,6 @@ package clientreto1.controller;
 
 import clientreto1.logic.SigneableFactory;
 import exceptions.InvalidPasswordException;
-import exceptions.MaxConnectionException;
 import exceptions.ServerException;
 import exceptions.UserNotExistException;
 import java.io.IOException;
@@ -26,7 +25,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.User;
 
@@ -64,12 +62,13 @@ public class FXMLSignInController {
 
     /**
      * Set stage for the login
+     *
      * @param stage
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    
+
     /**
      * Set and initialize the stage and its properties.
      * @param root
@@ -98,32 +97,19 @@ public class FXMLSignInController {
 
     /**
      * Set atributes to the controls that it need in the window showing event
+     *
      * @param event
      */
     public void handleButtonAction(ActionEvent event) {
         if (event.getSource().equals(btn_Login)) {
             LOGGER.info("Login button actioned!");
-            //try
-            //Crear un usuario
-            //Leer los valores de los campos texto y contraseña
-            //Poner los valores anteriores en el usuario anterior
-            //Obtener un signable pidiendo a factoria
-            //metodo a usar en la clase signIn 
-            //Lamar al metodo signin del signable
-            //Recoger lo que devuelve SignIn (User)
-            //abrir la ventana logout y pasarle User
-            //catch
-            //excepciones
-            //TODO
 
             try {
                 User user = new User();
 
                 user.setLogin(txt_Login.getText());
-                user.setPassword(txt_Password.getText());
-                //Signeable signIn = SigneableFactory.getSigneableImplementation();//IP y PORT
-                SigneableFactory.getSigneableImplementation().signIn(user);
-                //user = signIn.signIn(user);
+                user.setPassword(txt_Password.getText());        
+                SigneableFactory.getSigneableImplementation().signIn(user);              
                 FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/clientreto1/view/LogOut.fxml"));
                 Parent root = (Parent) loader.load();
@@ -177,25 +163,24 @@ public class FXMLSignInController {
      */
     public void handleTextChanged(ObservableValue observable,
             String oldValue, String newValue) {
+        
         String errString = null;
         String errStringPass = null;
-
-        //.trim() remove spaces
-        //check if the txtfields are empty and if they are not, activate the button
+        
         if (txt_Login.getText().trim().isEmpty()
                 || txt_Password.getText().trim().isEmpty()) {
             btn_Login.setDisable(true);
         } else {
             btn_Login.setDisable(false);
         }
-        //Parameters
+        
         if (txt_Login.isFocused()) {
             if (txt_Login.getText().isEmpty()) {
                 errString = "";
-            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Login.getText())) { //Sintax w/o numbers or especial characters
+            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Login.getText())) { 
                 errString = "Username not valid \n (Only A-Z and 0-9)";
             } else if (txt_Login.getText().length() < 6
-                    || txt_Login.getText().length() > 20) { //Username length is between 6 and 20
+                    || txt_Login.getText().length() > 20) { 
                 errString = "Username must to be between \n 6 – 20 characteres";
             }
             err_Login.setText(errString);
@@ -210,24 +195,23 @@ public class FXMLSignInController {
 
     /**
      * Load the signUp xml and pass the control to it controller
-     *
      * @param event
      */
     public void handleSignUp(ActionEvent event) {
-        //Create the loader for the signup xml
+            //Create the loader for the signup xml
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/clientreto1/view/SignUp.fxml"));
-        //Create the parent and load the tree
+            //Create the parent and load the tree
         Parent root = null;
         try {
             root = (Parent) loader.load();
-            //Create the Stage
+                //Create the Stage
             Stage signUpStage = new Stage();
-            //Load de controller
+                //Load de controller
             FXMLSignUpController controller = loader.getController();
-            //Set the stage
+                //Set the stage
             controller.setStage(signUpStage);
-            //Pass the control to the controller
+                //Pass the control to the controller
             controller.initStage(root);
 
         } catch (IOException ex) {
@@ -241,24 +225,24 @@ public class FXMLSignInController {
     }
 
     public void logOut(User user) {
-        //Create the loader for xml
+        
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/clientreto1/view/LogOut.fxml"));
-        //Create the parent and load the tree
+        
         Parent root;
         try {
             root = (Parent) loader.load();
-            //Create stage
+                //Create stage
             Stage logOutStage = new Stage();
-            //Load the controller
+                //Load the controller
             FXMLLogOutController controller = loader.getController();
-            //Set the stage and the user
+                //Set the stage and the user
             controller.setStage(logOutStage);
             controller.setUser(user);
-            //Pass the communication with the next layer
-            //PAss the control to the controller
+                //Pass the communication with the next layer
+                //PAss the control to the controller
             controller.initStage(root, user);
-            //Hide this stage
+                //Hide this stage
             stage.hide();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "An error in the SignIn loader", ex);
