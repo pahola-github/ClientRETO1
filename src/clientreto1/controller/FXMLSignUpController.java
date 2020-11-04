@@ -9,7 +9,6 @@ import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
-import interfaces.Signeable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -57,7 +56,7 @@ public class FXMLSignUpController {
     @FXML
     private TextField txt_Fullname;
     @FXML
-    private PasswordField txt_Password;
+    private PasswordField txt_PasswordSU;
     @FXML
     private PasswordField txt_VerifyPass;
     @FXML
@@ -97,6 +96,7 @@ public class FXMLSignUpController {
      * @param root
      */
     public void initStage(Parent root) {
+        LOGGER.info("init stage");
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
@@ -116,13 +116,20 @@ public class FXMLSignUpController {
 
         //Text Fields
         txt_Username.textProperty().addListener(this::handleTextChange);
-        stage.show();
         txt_Email.textProperty().addListener(this::handleTextChange);
         txt_Fullname.textProperty().addListener(this::handleTextChange);
-        txt_Password.textProperty().addListener(this::handleTextChange);
+        txt_PasswordSU.textProperty().addListener(this::handleTextChange);
         txt_VerifyPass.textProperty().addListener(this::handleTextChange);
         txt_Username.requestFocus();
+        
+        txt_Username.setText("");
+        txt_Email.setText("");
+        txt_Fullname.setText("");
+        txt_PasswordSU.setText("");
+        txt_VerifyPass.setText("");
+        stage.show();
     }
+    
 
     /**
      * Method that handles the action of the buttons
@@ -144,7 +151,7 @@ public class FXMLSignUpController {
                 user.setLogin(txt_Username.getText());
                 user.setEmail(txt_Email.getText());
                 user.setFullName(txt_Fullname.getText());
-                user.setPassword(txt_Password.getText());
+                user.setPassword(txt_PasswordSU.getText());
                 user.setPrivilege(UserPrivilege.USER);
                 user.setStatus(UserStatus.ENABLED);
                 user.setLastAccess(Date.valueOf(LocalDate.now()));
@@ -155,10 +162,7 @@ public class FXMLSignUpController {
                 LOGGER.info("User Created");
                 popUp(AlertType.INFORMATION, "User created successfully");
 
-            }/*catch(MaxConnectionException e){ //Max conns. occuped0
-                popUp(AlertType.ERROR, "Server is busy right now, "
-                         + "\n try again later.");
-            }*/catch(UserExistException e){ //User already exist
+            }catch(UserExistException e){ //User already exist
                 popUp(AlertType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
@@ -169,10 +173,7 @@ public class FXMLSignUpController {
             }catch(ServerException e){ //Server error / conn. failed
                  popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
-            }/*catch(IOException e){ //Input - Output exception
-                popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
-                         + "\n try again later.");
-            }*/catch(Exception e){  //Other exceptions
+            }catch(Exception e){  //Other exceptions
                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }
@@ -247,12 +248,12 @@ public class FXMLSignUpController {
         }
 
         //Password local check
-        if (txt_Password.isFocused()) { //If is focused
+        if (txt_PasswordSU.isFocused()) { //If is focused
             passOK = false;
-            if (txt_Password.getText().isEmpty()) { //Field is empty
+            if (txt_PasswordSU.getText().isEmpty()) { //Field is empty
                 errString = "Password cannot be empty";
-            } else if (txt_Password.getText().length() < 4
-                    || txt_Password.getText().length() > 20) { //Password length is between 4 and 20
+            } else if (txt_PasswordSU.getText().length() < 4
+                    || txt_PasswordSU.getText().length() > 20) { //Password length is between 4 and 20
                 errString = "Password must to be between \n 4 – 20 characters";
             } else { //If password is OK
                 errString = "";
@@ -262,11 +263,11 @@ public class FXMLSignUpController {
         }
 
         //Password verification local check
-        if (txt_VerifyPass.isFocused() || txt_Password.isFocused()) {//If is focused
+        if (txt_VerifyPass.isFocused() || txt_PasswordSU.isFocused()) {//If is focused
             verifyOK = false;
             if (txt_VerifyPass.getText().isEmpty()) {
                 errString = "Password verificstion cannot be empty";
-            } else if (!txt_VerifyPass.getText().equals(txt_Password.getText())) { //If password verification not matches the main password 
+            } else if (!txt_VerifyPass.getText().equals(txt_PasswordSU.getText())) { //If password verification not matches the main password 
                 errString = "Passwords do not match,\n try again";
             } else { //If password verification is OK
                 errString = "";
