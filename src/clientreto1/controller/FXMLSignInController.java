@@ -142,6 +142,9 @@ public class FXMLSignInController {
                 alert.setTitle("Password Error");
                 alert.setContentText("Password does not exist");
                 alert.showAndWait();
+                //LISTO 2
+                txt_Password.requestFocus();
+                txt_Password.setText("");
             }/*catch(MaxConnectionException ex){
                 LOGGER.warning("FXMLSignInController : Max Connection");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -166,11 +169,18 @@ public class FXMLSignInController {
         
         String errString = null;
         String errStringPass = null;
-        
+        //LISTO 3
         if (txt_Login.getText().trim().isEmpty()
-                || txt_Password.getText().trim().isEmpty()) {
+                || txt_Login.getText().length()<6) {
             btn_Login.setDisable(true);
         } else {
+            btn_Login.setDisable(false);
+        }
+        
+        if(txt_Password.getText().trim().isEmpty()
+                || txt_Password.getText().length()<4){
+            btn_Login.setDisable(true);
+        }else{
             btn_Login.setDisable(false);
         }
         
@@ -186,7 +196,9 @@ public class FXMLSignInController {
             err_Login.setText(errString);
         }
         if (txt_Password.isFocused()) {
-            if (txt_Password.getText().length() > 20) {
+            if (txt_Password.getText().length() >= 20) {
+                //LISTO 4
+                txt_Password.setText(txt_Password.getText().substring(0, 20)); //Comprueba que no se pueden introducir mas caracteres.
                 errStringPass = "Use 20 characters maximum \nfor the password";
             }
             err_Password.setText(errStringPass);

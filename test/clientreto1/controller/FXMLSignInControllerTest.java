@@ -105,6 +105,11 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         write("as@");
         verifyThat("#err_Login", isVisible());
         eraseText(3);
+        //Error usar un minimo de 6 caracteres
+        clickOn("#txt_Password");
+        write("as");
+        verifyThat("#err_Password", isVisible());
+        eraseText(2);
         //Error usar un máximo de 20 caracteres en password
         clickOn("#txt_Password");
         write("aaaaaaaaaaaaaaaaaaaaa");
