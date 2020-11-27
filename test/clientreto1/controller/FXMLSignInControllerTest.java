@@ -38,6 +38,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         verifyThat("#txt_Login", isEnabled());
         verifyThat("#txt_Password", isEnabled());
         verifyThat("#link_SignUp", isEnabled());
+        
 
     }
 
@@ -53,7 +54,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
         //Si existe el usuario y la password, le da acceso a la ventana main.
         clickOn("#txt_Login");
-        write("aingeru");
+        write("PaolaM");
         clickOn("#txt_Password");
         write("abcd*1234");
         clickOn("#btn_Login");
@@ -67,7 +68,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
         //Si  el usuario o la password no existen, le da acceso a la ventana main.
         clickOn("#txt_Login");
-        write("aingeruuu");
+        write("PaolaF");
         clickOn("#txt_Password");
         write("abcd*1234");
         clickOn("#btn_Login");
@@ -80,7 +81,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
     @Test
     public void test5_PasswordIsIncorrect() {
         clickOn("#txt_Login");
-        write("aingeru");
+        write("PaolaM");
         clickOn("#txt_Password");
         write("asdadsa");
         clickOn("#btn_Login");
@@ -105,6 +106,11 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         write("as@");
         verifyThat("#err_Login", isVisible());
         eraseText(3);
+        //Error usar un minimo de 6 caracteres
+        clickOn("#txt_Password");
+        write("as");
+        verifyThat("#err_Password", isVisible());
+        eraseText(2);
         //Error usar un máximo de 20 caracteres en password
         clickOn("#txt_Password");
         write("aaaaaaaaaaaaaaaaaaaaa");
