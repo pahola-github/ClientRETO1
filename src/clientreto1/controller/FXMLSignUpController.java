@@ -9,14 +9,18 @@ import clientreto1.logic.SigneableFactory;
 import exceptions.EmailExistException;
 import exceptions.ServerException;
 import exceptions.UserExistException;
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -27,23 +31,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import model.User;
 import model.UserPrivilege;
 import model.UserStatus;
 
 /**
- * Class to control the actions of the SignUp window
+ * Class to control the actions of the SignUp window.
  *
- * @author Bryssa
+ * @author Bryssa, Gari
  */
 public class FXMLSignUpController {
-    
+
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller.FXMLSignUpController");
-
 
     @FXML
     private Button btn_SignUp;
@@ -82,29 +84,29 @@ public class FXMLSignUpController {
     private boolean verifyOK = false;
 
     /**
-     * Set the stage from the main
+     * Set the stage from the main.
      *
-     * @param stage of the window
+     * @param stage of the window.
      */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     /**
-     * Init method to set the stage, the action handlers and some properties
+     * Init method to set the stage, the action handlers and some properties.
      *
-     * @param root
+     * @param root the parent we recived from the SignIn window.
+     * @author Bryssa
      */
     public void initStage(Parent root) {
-        LOGGER.info("init stage");
+        LOGGER.info("SignUp window opened."); // Gari
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
         //Some properties of the stage
         stage.setTitle("Sign Up window");
         stage.setResizable(false);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.onCloseRequestProperty().set(this::handleCloseRequest); // Gari
 
         //Sign Up button
         btn_SignUp.setDisable(true);
@@ -112,7 +114,7 @@ public class FXMLSignUpController {
         btn_SignUp.setOnAction(this::handleButtonAction);
 
         //Back button
-        btn_Back.setOnAction(this::handleButtonAction);        
+        btn_Back.setOnAction(this::handleButtonAction);
 
         //Text Fields
         txt_Username.textProperty().addListener(this::handleTextChange);
@@ -121,7 +123,7 @@ public class FXMLSignUpController {
         txt_PasswordSU.textProperty().addListener(this::handleTextChange);
         txt_VerifyPass.textProperty().addListener(this::handleTextChange);
         txt_Username.requestFocus();
-        
+
         txt_Username.setText("");
         txt_Email.setText("");
         txt_Fullname.setText("");
@@ -129,24 +131,22 @@ public class FXMLSignUpController {
         txt_VerifyPass.setText("");
         stage.show();
     }
-    
 
     /**
-     * Method that handles the action of the buttons
+     * Method that handles the action of the buttons.
      *
-     * @param event of a button actioned
+     * @param event of a button actioned.
+     * @author Bryssa
      */
     @FXML
     private void handleButtonAction(ActionEvent event) {
         if (event.getSource().equals(btn_SignUp)) { //Button SignUp
             /**
-             * Here starts the conn w the server, if something is wrong,
-             * the exception will be catched in the try/catch and
-             * shows the according error
-            */
+             * Here starts the conn w the server, if something is wrong, the exception will be catched in the try/catch and shows the according error
+             */
             LOGGER.info("SignUp button actioned!");
 
-            try{//Try to connect with the server, if not, catch the exceptions and shows and error
+            try {                       //Try to connect with the server, if not, catch the exceptions and shows and error
                 User user = new User();
                 user.setLogin(txt_Username.getText());
                 user.setEmail(txt_Email.getText());
@@ -156,57 +156,63 @@ public class FXMLSignUpController {
                 user.setStatus(UserStatus.ENABLED);
                 user.setLastAccess(Date.valueOf(LocalDate.now()));
                 user.setLastPasswordChange(Date.valueOf(LocalDate.now()));
-                
+
                 LOGGER.info("User generated...Sending to server...");
                 SigneableFactory.getSigneableImplementation().signUp(user);
                 LOGGER.info("User Created");
                 popUp(AlertType.INFORMATION, "User created successfully");
 
-            }catch(UserExistException e){ //User already exist
+                txt_Username.clear(); // Gari
+                txt_Email.clear(); // Gari
+                txt_Fullname.clear(); // Gari
+                txt_PasswordSU.clear(); // Gari
+                txt_VerifyPass.clear(); // Gari
+
+            } catch (UserExistException e) {                    //User already exist
                 popUp(AlertType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
-            }catch(EmailExistException e){ //Email already exist
+            } catch (EmailExistException e) {                   //Email already exist
                 popUp(AlertType.ERROR, "Email already exist.");
                 err_Email.setText("Email already exist");
                 txt_Email.requestFocus();
-            }catch(ServerException e){ //Server error / conn. failed
-                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
-                         + "\n try again later.");
-            }catch(Exception e){  //Other exceptions
+            } catch (ServerException e) {                       //Server error / conn. failed
                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
-                         + "\n try again later.");
+                        + "\n try again later.");
+            } catch (Exception e) {                             //Other exceptions
+                popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
+                        + "\n try again later.");
             }
         }
-        if (event.getSource().equals(btn_Back)) {//Button BACK
+        if (event.getSource().equals(btn_Back)) {               //Button BACK
             LOGGER.info("Back button actioned!");
-            popUp(AlertType.CONFIRMATION, "Registration will be cancelled."
-                + "\nAll the data will be erased.");
+            backButtonClickHandler(); // Gari
         }
     }
 
     /**
-     * Method to check that the LOCAL data is right
+     * Method to check that the LOCAL data is right.
      *
-     * @param observable the type of the value
-     * @param oldValue old value of the event
-     * @param newValue new value of the event
+     * @param observable the type of the value.
+     * @param oldValue old value of the event.
+     * @param newValue new value of the event.
+     * @author Bryssa
      */
     private void handleTextChange(ObservableValue observable, String oldValue, String newValue) {
         String errString = null;
         btn_SignUp.setDisable(true);
 
         //Username local check
-        if (txt_Username.isFocused()) { //If is focused
+        if (txt_Username.isFocused()) {         //If is focused
             usernameOK = false;
-            if (txt_Username.getText().isEmpty()) {//Field is empty
+            if (txt_Username.getText().isEmpty()) {                 //Field is empty
                 errString = "Username cannot be empty";
-            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Username.getText())) { //Syntax w/o especial characters or blankspaces
+            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Username.getText())) {      //Syntax w/o especial characters or blankspaces
                 errString = "Username not valid \n (Only A-Z and 0-9)";
             } else if (txt_Username.getText().length() < 6
-                    || txt_Username.getText().length() > 20) { //Username length is between 6 and 20
+                    || txt_Username.getText().length() > 20) {              //Username length is between 6 and 20
                 errString = "Username must to be between \n 6 – 20 characters";
-            } else {//If username is OK
+            } else {                //If username is OK
                 errString = "";
                 usernameOK = true;
             }
@@ -214,14 +220,14 @@ public class FXMLSignUpController {
         }
 
         //Email local check
-        if (txt_Email.isFocused()) { //If is focused
+        if (txt_Email.isFocused()) {                //If is focused
             emailOK = false;
-            if (txt_Email.getText().isEmpty()) { //Field is empty
+            if (txt_Email.getText().isEmpty()) {    //Field is empty
                 errString = "Email cannot be empty";
-            } else if (!checkEmail(txt_Email.getText())) { //Syntax is correct callin  a method to verify
+            } else if (!checkEmail(txt_Email.getText())) {              //Syntax is correct callin  a method to verify
                 errString = "E-mail syntax. not valid\n(e.g. example@email.com)";
             } else if (txt_Email.getText().length() < 6
-                    || txt_Email.getText().length() > 30) { //Email length is between 6 and 20
+                    || txt_Email.getText().length() > 30) {             //Email length is between 6 and 20
                 errString = "E-mail must to be between \n 6-30 characters";
             } else { //If email is OK
                 errString = "";
@@ -231,16 +237,16 @@ public class FXMLSignUpController {
         }
 
         //Fullname local check
-        if (txt_Fullname.isFocused()) { //If is focused
+        if (txt_Fullname.isFocused()) {                  //If is focused
             nameOK = false;
-            if (txt_Fullname.getText().isEmpty()) {//Field is empty
+            if (txt_Fullname.getText().isEmpty()) {         //Field is empty
                 errString = "Fullname cannot be empty";
             } else if (!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())) { // 
                 errString = "Fullname not valid\n(Only A-Z and blankspaces)";
             } else if (txt_Fullname.getText().length() < 5
-                    || txt_Fullname.getText().length() > 50) { //Fullname length is between 6 and 20
+                    || txt_Fullname.getText().length() > 50) {           //Fullname length is between 6 and 20
                 errString = "Fullname must to be between \n 5 – 50 characters";
-            } else {//If fullname is OK
+            } else {        //If fullname is OK
                 errString = "";
                 nameOK = true;
             }
@@ -248,14 +254,14 @@ public class FXMLSignUpController {
         }
 
         //Password local check
-        if (txt_PasswordSU.isFocused()) { //If is focused
+        if (txt_PasswordSU.isFocused()) {       //If is focused
             passOK = false;
-            if (txt_PasswordSU.getText().isEmpty()) { //Field is empty
+            if (txt_PasswordSU.getText().isEmpty()) {                //Field is empty
                 errString = "Password cannot be empty";
             } else if (txt_PasswordSU.getText().length() < 4
-                    || txt_PasswordSU.getText().length() > 20) { //Password length is between 4 and 20
+                    || txt_PasswordSU.getText().length() > 20) {    //Password length is between 4 and 20
                 errString = "Password must to be between \n 4 – 20 characters";
-            } else { //If password is OK
+            } else {                    //If password is OK
                 errString = "";
                 passOK = true;
             }
@@ -263,7 +269,7 @@ public class FXMLSignUpController {
         }
 
         //Password verification local check
-        if (txt_VerifyPass.isFocused() || txt_PasswordSU.isFocused()) {//If is focused
+        if (txt_VerifyPass.isFocused() || txt_PasswordSU.isFocused()) {             //If is focused
             verifyOK = false;
             if (txt_VerifyPass.getText().isEmpty()) {
                 errString = "Password verificstion cannot be empty";
@@ -287,76 +293,145 @@ public class FXMLSignUpController {
     }
 
     /**
-     * Method that checks if the email has "@" and "."
-     * 
-     * @param email to check
-     * @return the final result
+     * Method that verifies that the email contains the requested rules. Ex: "example@mail.com".
+     *
+     * @param email to check.
+     * @return the email verified.
+     * @author Gari
      */
     private boolean checkEmail(String email) {
-        boolean ok = false;
-        boolean at = false;
+        boolean ok;
 
-        //Verify the email, searching for "@" and "."
-        for (int letra = 0; email.length() > letra; letra++) {
-            if (email.substring(letra, letra + 1).equalsIgnoreCase("@"))//Search for @
-                at = true;
-            if (at && email.substring(letra, letra + 1).equalsIgnoreCase(".")){//Search for .
-                return ok=true;
-            }
+        // Pattern for validate the email.
+        Pattern pattern = Pattern
+                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+        Matcher mather = pattern.matcher(email);
+
+        if (mather.find() == true) {
+            ok = true;
+        } else {
+            ok = false;
         }
         return ok;
     }
 
     /**
-     * Method to verify if all the fields are right
-     * 
-     * @return the amount of right fields, 0 - all wrong / 5 - all right
+     * Method to verify if all the fields are right.
+     *
+     * @return the amount of right fields, 0 - all wrong / 5 - all right.
+     * @author Bryssa
      */
     private int okLevel() {
         Integer level = 0;
-        if (usernameOK) 
+        if (usernameOK) {
             level++;
-        if (emailOK) 
+        }
+        if (emailOK) {
             level++;
-        if (nameOK) 
+        }
+        if (nameOK) {
             level++;
-        if (passOK)
+        }
+        if (passOK) {
             level++;
-        if (verifyOK)
+        }
+        if (verifyOK) {
             level++;
+        }
         return level;
     }
-    
+
     /**
-     * Method to build and show a requiered PopUp with parameters
-     * 
-     * @param type of Pop Up wanted -CONFIRMATION, INFORMATION, ERROR-
-     * @param msg Message to show in the Pop Up
+     * Method to build and show a requiered PopUp with parameters.
+     *
+     * @param type of Pop Up wanted -CONFIRMATION, INFORMATION, ERROR-.
+     * @param msg Message to show in the Pop Up.
+     * @author Bryssa
      */
-    private void popUp(AlertType type, String msg){
+    private void popUp(AlertType type, String msg) {
         LOGGER.info("Creating PopUp");
         Alert alert = null;
         alert = new Alert(type);
 
-        try{
-            if(type == AlertType.CONFIRMATION){ // Type of pop up is Confirmation
+        try {
+            if (type == AlertType.CONFIRMATION) { // Type of pop up is Confirmation
                 alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.setContentText("Are you sure?");
-            }else //Type of pop up is info or error
+            } else //Type of pop up is info or error
+            {
                 alert.getButtonTypes().setAll(ButtonType.OK);
+            }
 
             alert.setTitle("PopUp!");
             alert.setHeaderText(msg);
             Optional<ButtonType> result = alert.showAndWait();
 
-            if(result.get() == ButtonType.YES){//Button YES
+            if (result.get() == ButtonType.YES) {//Button YES
                 LOGGER.info("Entra en YES");
                 stage.hide();
-            }else //Button NO or OK
+            } else //Button NO or OK
+            {
                 LOGGER.info("Entra en NO");
-                alert.close();
-        }catch(Exception e){
+            }
+            alert.close();
+        } catch (Exception e) {
             LOGGER.warning(e.getMessage());
         }
+    }
+    /**
+     * Method to request closing confirmation when the "X" of the window is pressed.
+     * @param event pop-up alert window.
+     * @author Gari
+     */
+    private void handleCloseRequest(WindowEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Close");
+        alert.setHeaderText("Application will be closed.");
+        alert.setContentText("Do you want to close the window?");
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get().equals(ButtonType.OK)) {
+            stage.close();
+            Platform.exit();
+        } else {
+            event.consume();
+            alert.close();
+        }
+    }
+    /**
+     * Method to ask for confirmation and execute an action by pressing the back button. 
+     * @author Gari
+     */
+    private void backButtonClickHandler() {
+
+        Alert alert = new Alert(AlertType.CONFIRMATION); // Make new confirmation alert.
+        alert.setTitle("Go back"); // Title of the alert.
+        String alertMsg = "Are you sure yo want to go back?"; // Text of the alert.
+        alert.setContentText(alertMsg);
+        Optional<ButtonType> result = alert.showAndWait();
+        if ((result.isPresent()) && (result.get() == ButtonType.OK)) { // If we click on OK we will run the method for change the stage.
+            this.changeStageToLogin();
+        }
+
+    }
+    /**
+     * Method to return to the SignIn window and close where we are.
+     * @author Gari
+     */
+    private void changeStageToLogin() {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientreto1/view/SignIn.fxml")); // Charge the SignIn scene.
+        Parent root = null;
+        try {
+            root = (Parent) loader.load();
+            stage.close(); // Close the actual stage.
+        } catch (IOException ex) {
+            LOGGER.info("I/O error.");
+        }
+        FXMLSignInController controller = loader.getController(); // Load the controller.
+        controller.setStage(new Stage());
+        controller.initStage(root); // Init the new SignI stage.
     }
 }

@@ -32,7 +32,7 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
     @After
     public void closeSignUpWindow() {
         clickOn("#btn_Back");
-        clickOn("Sí");
+        clickOn("Aceptar");
     }
 
     @Test
@@ -232,5 +232,28 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         verifyThat("User created successfully", isVisible());
         clickOn("Aceptar");
         
+    }
+    
+    @Test
+    public void testI_EmailChecker() {
+        
+        clickOn("#txt_Email");
+        write("@gmail.com");
+        verifyThat("#err_Email", isVisible());
+        eraseText(10);
+        
+        clickOn("#txt_Email");
+        write("asd@.");
+        verifyThat("#err_Email", isVisible());
+        eraseText(5);
+               
+    }
+    @Test
+    public void testJ_WindowClosedChecker() {
+        
+        verifyThat("#signupPane", isVisible());
+        verifyThat("#signinPane", isVisible());
+        
+
     }
 }
