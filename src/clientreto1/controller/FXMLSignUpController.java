@@ -184,10 +184,9 @@ public class FXMLSignUpController {
                 LOGGER.warning("EXCEPTION Generic Exception");
                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                         + "\n try again later.");
-            } catch (Exception e) {                             //Other exceptions
-                popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
-                        + "\n try again later.");
             }
+            //Other exceptions
+            
         }
         if (event.getSource().equals(btn_Back)) {               //Button BACK
             LOGGER.info("Back button actioned!");

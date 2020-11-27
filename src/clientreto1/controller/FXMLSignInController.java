@@ -27,11 +27,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.User;
+import java.util.Optional;
+import javafx.application.Platform;
+import javafx.scene.control.ButtonType;
+import javafx.stage.WindowEvent;
+
 
 /**
  * Login FXML Controller class
  *
- * @author Paola
+ * @author Paola , Aingeru
  * @version 1.2
  */
 public class FXMLSignInController {
@@ -63,7 +68,7 @@ public class FXMLSignInController {
     /**
      * Set stage for the login
      *
-     * @param stage
+     * @param stage  receives a Stage.
      */
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -71,7 +76,7 @@ public class FXMLSignInController {
 
     /**
      * Set and initialize the stage and its properties.
-     * @param root
+     * @param root Receives a parent stage that is the base class for all nodes that have children in the scene graph.
      */
     public void initStage(Parent root) {
         //Create a scene associated to to the parent root
@@ -85,6 +90,9 @@ public class FXMLSignInController {
         btn_Login.setDisable(true);
         btn_Login.setDefaultButton(true);
         btn_Login.setOnAction(this::handleButtonAction);
+        //------------- AINGERU ---------------------
+        //The following line is called when there is an external request to close the window.
+        stage.onCloseRequestProperty().set(this::handleCloseRequest);
         //Set window's event handlers text
         txt_Login.requestFocus();
         txt_Login.textProperty().addListener(this::handleTextChanged);
@@ -98,7 +106,7 @@ public class FXMLSignInController {
     /**
      * Set atributes to the controls that it need in the window showing event
      *
-     * @param event
+     * @param event  An event representing some type of action. In this case when the Login Button is fired.
      */
     public void handleButtonAction(ActionEvent event) {
         if (event.getSource().equals(btn_Login)) {
@@ -130,6 +138,12 @@ public class FXMLSignInController {
                 alert.setTitle("Login Error");
                 alert.setContentText("User does not exist");
                 alert.showAndWait();
+                 //------------------------------AINGERU---------------------
+                //The following 2 lines set the Login text as default(empty) and put the focus in it.
+                txt_Login.setText("");
+                txt_Login.requestFocus();
+                // --------------------------------AINGERU--------------------
+                //If a ServerException is caught, an alert is displayed with the text "Unable to connect with server"
             } catch (ServerException ex) {
                 LOGGER.warning("FXMLSignInController : Server connection error");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -160,9 +174,9 @@ public class FXMLSignInController {
      * enable it. Also verify the that the person who is writting don't write
      * more than 20 characters,check the introduction of symbols.
      *
-     * @param observable
-     * @param oldValue
-     * @param newValue
+     * @param observable an entity that wraps a value and allows to observe the value for changes
+     * @param oldValue The old value that the method is going to observe (in this case is not used)
+     * @param newValue The new value that the method is going to observe (in this case is not used)  
      */
     public void handleTextChanged(ObservableValue observable,
             String oldValue, String newValue) {
@@ -177,11 +191,17 @@ public class FXMLSignInController {
             btn_Login.setDisable(false);
         }
         
+         if (txt_Login.getText().length() < 6
+                || txt_Login.getText().length() > 20) {
+            btn_Login.setDisable(true);
+        } if (txt_Password.getText().length() < 6
+                || txt_Password.getText().length() > 20) {
+            btn_Login.setDisable(true);
+        }
+        
         if(txt_Password.getText().trim().isEmpty()
                 || txt_Password.getText().length()<4){
             btn_Login.setDisable(true);
-        }else{
-            btn_Login.setDisable(false);
         }
         
         if (txt_Login.isFocused()) {
@@ -192,6 +212,12 @@ public class FXMLSignInController {
             } else if (txt_Login.getText().length() < 6
                     || txt_Login.getText().length() > 20) { 
                 errString = "Username must to be between \n 6 – 20 characteres";
+                //----------------------- AINGERU--------------------------
+        // This if controls that the maximum number of characters to write in Login text is 20.
+                if (txt_Login.getText().length() > 20 ) {
+                    String maxLength = txt_Login.getText().substring(0, 20);
+                    txt_Login.setText(maxLength);
+                }
             }
             err_Login.setText(errString);
         }
@@ -207,7 +233,7 @@ public class FXMLSignInController {
 
     /**
      * Load the signUp xml and pass the control to it controller
-     * @param event
+     * @param event  An event representing some type of action. In this case when the hyperlink is pressed. 
      */
     public void handleSignUp(ActionEvent event) {
             //Create the loader for the signup xml
@@ -234,6 +260,25 @@ public class FXMLSignInController {
             alert.showAndWait();
         }
 
+    }
+     /**
+     * This method displays an alert to close the current window, which asks for confirmation
+     * @param event An event that indicates that a window its going to change  its status.
+     */
+    public void handleCloseRequest(WindowEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Close");
+        alert.setHeaderText("Application will be closed.");
+        alert.setContentText("Do you want to close the window?");
+        alert.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get().equals(ButtonType.OK)){
+        stage.close();
+        Platform.exit();
+    }else{
+            event.consume();
+            alert.close();
+        }
     }
 
     public void logOut(User user) {

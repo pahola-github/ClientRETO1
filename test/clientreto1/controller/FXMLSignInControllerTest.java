@@ -6,6 +6,7 @@
 package clientreto1.controller;
 
 import clientreto1.FXApplication;
+import javafx.scene.input.KeyCode;
 
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -15,11 +16,13 @@ import org.junit.FixMethodOrder;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
+import static org.testfx.matcher.base.NodeMatchers.isFocused;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 /**
- * This class contains all the tests of the SignIn Controller.
+ * This class contains all the tests of the SignIn Controller
+ *
  * @author Aingeru
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -30,31 +33,31 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
         new FXApplication().start(stage);
     }
+
     
     @Test
-    public void test1_Initialization() {
+    public void test01_Initialization() {
 
         verifyThat("#btn_Login", isDisabled());
         verifyThat("#txt_Login", isEnabled());
         verifyThat("#txt_Password", isEnabled());
         verifyThat("#link_SignUp", isEnabled());
-        
 
     }
 
     @Test
-    public void test2_LoginAndPasswordAreFilled() {
+    public void test02_LoginAndPasswordAreFilled() {
         verifyThat("#txt_Login", hasText(""));
         verifyThat("#txt_Password", hasText(""));
         verifyThat("#btn_Login", isDisabled());
     }
 
     @Test
-    public void test3_UserExists() {
+    public void test03_UserExists() {
 
         //Si existe el usuario y la password, le da acceso a la ventana main.
         clickOn("#txt_Login");
-        write("PaolaM");
+        write("aingeru");
         clickOn("#txt_Password");
         write("abcd*1234");
         clickOn("#btn_Login");
@@ -64,11 +67,11 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         }
 
     @Test
-    public void test4_UserNotExists() {
+    public void test04_UserNotExists() {
 
         //Si  el usuario o la password no existen, le da acceso a la ventana main.
         clickOn("#txt_Login");
-        write("PaolaF");
+        write("aingeruuu");
         clickOn("#txt_Password");
         write("abcd*1234");
         clickOn("#btn_Login");
@@ -79,9 +82,9 @@ public class FXMLSignInControllerTest extends ApplicationTest {
      
     
     @Test
-    public void test5_PasswordIsIncorrect() {
+    public void test05_PasswordIsIncorrect() {
         clickOn("#txt_Login");
-        write("PaolaM");
+        write("aingeru");
         clickOn("#txt_Password");
         write("asdadsa");
         clickOn("#btn_Login");
@@ -90,7 +93,7 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         
     }
     @Test
-    public void test6_LoginOrPasswordFieldsDataIsIncorrect() {
+    public void test06_LoginOrPasswordFieldsDataIsIncorrect() {
         //Error usar un minimo de 6 caracteres
         clickOn("#txt_Login");
         write("as");
@@ -106,11 +109,6 @@ public class FXMLSignInControllerTest extends ApplicationTest {
         write("as@");
         verifyThat("#err_Login", isVisible());
         eraseText(3);
-        //Error usar un minimo de 6 caracteres
-        clickOn("#txt_Password");
-        write("as");
-        verifyThat("#err_Password", isVisible());
-        eraseText(2);
         //Error usar un máximo de 20 caracteres en password
         clickOn("#txt_Password");
         write("aaaaaaaaaaaaaaaaaaaaa");
@@ -119,11 +117,73 @@ public class FXMLSignInControllerTest extends ApplicationTest {
 
     }
      @Test
-    public void test7_HyperLinkCanBePulsed() {
+    public void test07_HyperLinkCanBePulsed() {
 
          clickOn("#link_SignUp");
          verifyThat("#signupPane", isVisible());
+         clickOn("#btn_Back");
+         clickOn("Sí");
         
         }
+    
+    //THIS TEST ONLY RUNS SUCCESFULLY WHERE THE SERVER IS DOWN
+    /* 
+    @Test
+    public void test08_DatabaseErrorIsVisible() {
+
+        clickOn("#txt_Login");
+        write("aingeru");
+        clickOn("#txt_Password");
+        write("abcd*1234");
+        clickOn("#btn_Login");
+        verifyThat("Unable to connect with server", isVisible());
+        clickOn("Aceptar");
+
+    }*/
+
+    @Test
+    public void test09_CantWriteMoreThan20CharactersInLoginField() {
+
+        clickOn("#txt_Login");
+        write("aaaaaaaaaaaaaaaaaaaaab");
+        eraseText(20);
+        verifyThat("#txt_Login", hasText(""));
+
+    }
+
+    @Test
+    public void test10_IfUserIsInvalidClearLoginTextField() {
+
+        clickOn("#txt_Login");
+        write("aaaaaaaaa");
+        clickOn("#txt_Password");
+        write("abcd*1234");
+        clickOn("#btn_Login");
+        verifyThat("User does not exist", isVisible());
+        clickOn("Aceptar");
+        verifyThat("#txt_Login", isFocused());
+        verifyThat("#txt_Login", hasText(""));
+
+    }
+    
+    @Test
+    public void test11_PasswordIsIntroducedAndUserHasOneCharacterLoginButtonIsDisabled() {
+
+        
+        clickOn("#txt_Password");
+        write("abcd*1234");
+        clickOn("#txt_Login");
+        write("a");
+        verifyThat("#btn_Login", isDisabled());
+
+    }
+    @Test
+    public void test12_CloseRequest() {
+
+        this.push(KeyCode.ALT, KeyCode.F4);
+        verifyThat("Do you want to close the window?", isVisible());
+        clickOn("Cancelar");
+        
+    }
 
 }

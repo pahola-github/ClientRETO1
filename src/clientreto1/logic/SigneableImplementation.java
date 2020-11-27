@@ -92,8 +92,12 @@ public class SigneableImplementation implements Signeable {
         } finally {
             try {
               
-                sc.close(); // Close the socket.
+                if (sc == null) {
+                    throw new ServerException();
 
+                } else {
+                    sc.close(); // Close the socket.
+                }
             } catch (IOException ex) {
 
                 LOGGER.log(Level.SEVERE, "Socket close error.", ex);
