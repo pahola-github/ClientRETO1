@@ -104,7 +104,7 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
     @Test
     public void testD_TextFieldVerify(){
         
-        clickOn("#txt_Username"); // Comprueba error cuando tengo menos de 6 caracteres.
+        clickOn("#txt_Username"); // Comprueba error cuando tengo menos de 5 caracteres.
         write("asd");
         verifyThat("#err_Username", isVisible());
         eraseText(3);
@@ -138,6 +138,11 @@ public class FXMLSignUpControllerTest extends ApplicationTest {
         write("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         verifyThat("#err_Fullname", isVisible());
         eraseText(58);
+        
+        clickOn("#txt_Fullname"); // Comprueba error cuando tengo caracteres invalidos.
+        write("1234+/");
+        verifyThat("#err_Fullname", isVisible());
+        eraseText(6);
         
         clickOn("#txt_PasswordSU"); // Comprueba error cuando tengo menos de 4 caracteres.
         write("asd");

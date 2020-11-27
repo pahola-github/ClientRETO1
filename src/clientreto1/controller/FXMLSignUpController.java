@@ -161,22 +161,27 @@ public class FXMLSignUpController {
                 SigneableFactory.getSigneableImplementation().signUp(user);
                 LOGGER.info("User Created");
                 popUp(AlertType.INFORMATION, "User created successfully");
-
+                 
                 txt_Username.clear(); // Gari
                 txt_Email.clear(); // Gari
                 txt_Fullname.clear(); // Gari
                 txt_PasswordSU.clear(); // Gari
-                txt_VerifyPass.clear(); // Gari
-
-            } catch (UserExistException e) {                    //User already exist
+            }catch(UserExistException e){ //User already exist
+                LOGGER.warning("EXCEPTION User already exist");
                 popUp(AlertType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
-            } catch (EmailExistException e) {                   //Email already exist
+            }catch(EmailExistException e){ //Email already exist
+                LOGGER.warning("EXCEPTION Email already exist");
                 popUp(AlertType.ERROR, "Email already exist.");
                 err_Email.setText("Email already exist");
                 txt_Email.requestFocus();
-            } catch (ServerException e) {                       //Server error / conn. failed
+            }catch(ServerException e){ //Server error / conn. failed
+                LOGGER.warning("EXCEPTION Server Exception");
+                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
+                         + "\n try again later.");
+            }catch(Exception e){  //Other exceptions
+                LOGGER.warning("EXCEPTION Generic Exception");
                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                         + "\n try again later.");
             } catch (Exception e) {                             //Other exceptions
@@ -199,6 +204,7 @@ public class FXMLSignUpController {
      * @author Bryssa
      */
     private void handleTextChange(ObservableValue observable, String oldValue, String newValue) {
+        LOGGER.info("User is changing text");
         String errString = null;
         btn_SignUp.setDisable(true);
 
@@ -209,10 +215,10 @@ public class FXMLSignUpController {
                 errString = "Username cannot be empty";
             } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Username.getText())) {      //Syntax w/o especial characters or blankspaces
                 errString = "Username not valid \n (Only A-Z and 0-9)";
-            } else if (txt_Username.getText().length() < 6
-                    || txt_Username.getText().length() > 20) {              //Username length is between 6 and 20
-                errString = "Username must to be between \n 6 – 20 characters";
-            } else {                //If username is OK
+            } else if (txt_Username.getText().length() < 5
+                    || txt_Username.getText().length() > 20) { //Username length is between 5 and 20
+                errString = "Username must to be between \n 5 – 20 characters";
+            } else {//If username is OK
                 errString = "";
                 usernameOK = true;
             }
@@ -241,7 +247,8 @@ public class FXMLSignUpController {
             nameOK = false;
             if (txt_Fullname.getText().isEmpty()) {         //Field is empty
                 errString = "Fullname cannot be empty";
-            } else if (!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())) { // 
+            } else if (!Pattern.matches("[a-z_A-Z_ _ñÑáÁéÉíÍóÓúÚ]+", txt_Fullname.getText())) { // 
+                //[a-z_A-Z_ ]
                 errString = "Fullname not valid\n(Only A-Z and blankspaces)";
             } else if (txt_Fullname.getText().length() < 5
                     || txt_Fullname.getText().length() > 50) {           //Fullname length is between 6 and 20
@@ -300,6 +307,7 @@ public class FXMLSignUpController {
      * @author Gari
      */
     private boolean checkEmail(String email) {
+        LOGGER.info("Checking email...");
         boolean ok;
 
         // Pattern for validate the email.
@@ -313,6 +321,7 @@ public class FXMLSignUpController {
             ok = true;
         } else {
             ok = false;
+            LOGGER.info("Email incorrect");
         }
         return ok;
     }
