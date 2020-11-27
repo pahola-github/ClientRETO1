@@ -142,7 +142,7 @@ public class FXMLSignInController {
                 alert.setTitle("Password Error");
                 alert.setContentText("Password does not exist");
                 alert.showAndWait();
-                //LISTO 2
+                //LISTO 2.
                 txt_Password.requestFocus();
                 txt_Password.setText("");
             }/*catch(MaxConnectionException ex){
