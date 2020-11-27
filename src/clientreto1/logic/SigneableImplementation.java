@@ -94,8 +94,13 @@ public class SigneableImplementation implements Signeable {
         } finally {
 
             try {
+                if (sc == null) {
+                    throw new ServerException();
 
-                sc.close(); // Close the socket.
+                } else {
+                    sc.close(); // Close the socket.
+
+                }
                
             } catch (IOException ex) {
                 
@@ -158,7 +163,6 @@ public class SigneableImplementation implements Signeable {
         } finally {
 
             try {
-
                 sc.close(); // Close the socket.
 
             } catch (IOException ex) {

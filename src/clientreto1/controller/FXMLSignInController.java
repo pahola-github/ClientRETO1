@@ -10,9 +10,11 @@ import exceptions.InvalidPasswordException;
 import exceptions.ServerException;
 import exceptions.UserNotExistException;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,24 +23,24 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.User;
 
 /**
- * Login FXML Controller class
+ * This class contains the Login FXML controller.
  *
- * @author Paola
- * @version 1.2
+ * @author Paola, Aingeru
  */
 public class FXMLSignInController {
 
     /**
-     * This is the logger that it go to save information about the desktop
-     * application
+     * This is the logger that it go to save information about the desktop application
      */
     private static final Logger LOGGER = Logger
             .getLogger("clientreto1.controller.FXMLSignInController");
@@ -59,11 +61,12 @@ public class FXMLSignInController {
     private Stage stage;
 
     private User user;
+    
 
     /**
      * Set stage for the login
      *
-     * @param stage
+     * @param stage receives a Stage.
      */
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -71,7 +74,8 @@ public class FXMLSignInController {
 
     /**
      * Set and initialize the stage and its properties.
-     * @param root
+     *
+     * @param root Receives a parent stage that is the base class for all nodes that have children in the scene graph.
      */
     public void initStage(Parent root) {
         //Create a scene associated to to the parent root
@@ -85,6 +89,10 @@ public class FXMLSignInController {
         btn_Login.setDisable(true);
         btn_Login.setDefaultButton(true);
         btn_Login.setOnAction(this::handleButtonAction);
+        
+        //------------- AINGERU ---------------------
+        //The following line is called when there is an external request to close the window.
+        stage.onCloseRequestProperty().set(this::handleCloseRequest);
         //Set window's event handlers text
         txt_Login.requestFocus();
         txt_Login.textProperty().addListener(this::handleTextChanged);
@@ -98,9 +106,9 @@ public class FXMLSignInController {
     /**
      * Set atributes to the controls that it need in the window showing event
      *
-     * @param event
+     * @param event An event representing some type of action. In this case when the Login Button is fired.
      */
-    public void handleButtonAction(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event)  {
         if (event.getSource().equals(btn_Login)) {
             LOGGER.info("Login button actioned!");
 
@@ -108,8 +116,8 @@ public class FXMLSignInController {
                 User user = new User();
 
                 user.setLogin(txt_Login.getText());
-                user.setPassword(txt_Password.getText());        
-                SigneableFactory.getSigneableImplementation().signIn(user);              
+                user.setPassword(txt_Password.getText());
+                SigneableFactory.getSigneableImplementation().signIn(user);
                 FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/clientreto1/view/LogOut.fxml"));
                 Parent root = (Parent) loader.load();
@@ -118,6 +126,7 @@ public class FXMLSignInController {
                 Stage logOutStage = new Stage();
                 logOutController.setStage(logOutStage);
                 logOutController.initStage(root, user);
+              
             } catch (IOException ex) {
                 LOGGER.warning("FXMLSignInController : Exception on FXMLSignInController");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -130,6 +139,12 @@ public class FXMLSignInController {
                 alert.setTitle("Login Error");
                 alert.setContentText("User does not exist");
                 alert.showAndWait();
+                //------------------------------AINGERU---------------------
+                //The following 2 lines set the Login text as default(empty) and put the focus in it.
+                txt_Login.setText("");
+                txt_Login.requestFocus();
+                // --------------------------------AINGERU--------------------
+                //If a ServerException is caught, an alert is displayed with the text "Unable to connect with server"
             } catch (ServerException ex) {
                 LOGGER.warning("FXMLSignInController : Server connection error");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -152,36 +167,48 @@ public class FXMLSignInController {
     }
 
     /**
-     * Verify if there are empty fields and modify button login's setDisable
-     * method. If there are any field empty, disable the login button, else
-     * enable it. Also verify the that the person who is writting don't write
-     * more than 20 characters,check the introduction of symbols.
+     * Verify if there are empty fields and modify button login's setDisable method. If there are any field empty, disable the login button, else enable it. Also verify the that the person who is writting don't write more than 20 characters,check the introduction of symbols.
      *
-     * @param observable
-     * @param oldValue
-     * @param newValue
+     * @param observable  an entity that wraps a value and allows to observe the value for changes
+     * @param oldValue The old value that the method is going to observe (in this case is not used)      
+     * @param newValue The new value that the method is going to observe (in this case is not used)  
      */
     public void handleTextChanged(ObservableValue observable,
             String oldValue, String newValue) {
-        
+
         String errString = null;
         String errStringPass = null;
-        
+
         if (txt_Login.getText().trim().isEmpty()
                 || txt_Password.getText().trim().isEmpty()) {
             btn_Login.setDisable(true);
         } else {
             btn_Login.setDisable(false);
         }
-        
+        if (txt_Login.getText().length() < 6
+                || txt_Login.getText().length() > 20) {
+            btn_Login.setDisable(true);
+        }
+        if (txt_Password.getText().length() < 6
+                || txt_Password.getText().length() > 20) {
+            btn_Login.setDisable(true);
+        }
+
         if (txt_Login.isFocused()) {
             if (txt_Login.getText().isEmpty()) {
                 errString = "";
-            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Login.getText())) { 
+            } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Login.getText())) {
                 errString = "Username not valid \n (Only A-Z and 0-9)";
             } else if (txt_Login.getText().length() < 6
-                    || txt_Login.getText().length() > 20) { 
+                    || txt_Login.getText().length() > 20) {
                 errString = "Username must to be between \n 6 – 20 characteres";
+                
+        //----------------------- AINGERU--------------------------
+        // This if controls that the maximum number of characters to write in Login text is 20.
+                if (txt_Login.getText().length() > 20 ) {
+                    String maxLength = txt_Login.getText().substring(0, 20);
+                    txt_Login.setText(maxLength);
+                }
             }
             err_Login.setText(errString);
         }
@@ -195,23 +222,24 @@ public class FXMLSignInController {
 
     /**
      * Load the signUp xml and pass the control to it controller
-     * @param event
+     *
+     * @param event An event representing some type of action. In this case when the hyperlink is pressed. 
      */
     public void handleSignUp(ActionEvent event) {
-            //Create the loader for the signup xml
+        //Create the loader for the signup xml
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/clientreto1/view/SignUp.fxml"));
-            //Create the parent and load the tree
+        //Create the parent and load the tree
         Parent root = null;
         try {
             root = (Parent) loader.load();
-                //Create the Stage
+            //Create the Stage
             Stage signUpStage = new Stage();
-                //Load de controller
+            //Load de controller
             FXMLSignUpController controller = loader.getController();
-                //Set the stage
+            //Set the stage
             controller.setStage(signUpStage);
-                //Pass the control to the controller
+            //Pass the control to the controller
             controller.initStage(root);
 
         } catch (IOException ex) {
@@ -223,26 +251,45 @@ public class FXMLSignInController {
         }
 
     }
+    /**
+     * This method displays an alert to close the current window, which asks for confirmation
+     * @param event An event that indicates that a window its going to change  its status.
+     */
+    public void handleCloseRequest(WindowEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Close");
+        alert.setHeaderText("Application will be closed.");
+        alert.setContentText("Do you want to close the window?");
+        alert.getButtonTypes().setAll(ButtonType.OK,ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get().equals(ButtonType.OK)){
+        stage.close();
+        Platform.exit();
+    }else{
+            event.consume();
+            alert.close();
+        }
+    }
 
     public void logOut(User user) {
-        
+
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/clientreto1/view/LogOut.fxml"));
-        
+
         Parent root;
         try {
             root = (Parent) loader.load();
-                //Create stage
+            //Create stage
             Stage logOutStage = new Stage();
-                //Load the controller
+            //Load the controller
             FXMLLogOutController controller = loader.getController();
-                //Set the stage and the user
+            //Set the stage and the user
             controller.setStage(logOutStage);
             controller.setUser(user);
-                //Pass the communication with the next layer
-                //PAss the control to the controller
+            //Pass the communication with the next layer
+            //PAss the control to the controller
             controller.initStage(root, user);
-                //Hide this stage
+            //Hide this stage
             stage.hide();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "An error in the SignIn loader", ex);
