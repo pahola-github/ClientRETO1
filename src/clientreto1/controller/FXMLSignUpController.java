@@ -163,17 +163,21 @@ public class FXMLSignUpController {
                 popUp(AlertType.INFORMATION, "User created successfully");
 
             }catch(UserExistException e){ //User already exist
+                LOGGER.warning("EXCEPTION User already exist");
                 popUp(AlertType.ERROR, "User already exist.");
                 err_Username.setText("User already exist");
                 txt_Username.requestFocus();
             }catch(EmailExistException e){ //Email already exist
+                LOGGER.warning("EXCEPTION Email already exist");
                 popUp(AlertType.ERROR, "Email already exist.");
                 err_Email.setText("Email already exist");
                 txt_Email.requestFocus();
             }catch(ServerException e){ //Server error / conn. failed
+                LOGGER.warning("EXCEPTION Server Exception");
                  popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }catch(Exception e){  //Other exceptions
+                LOGGER.warning("EXCEPTION Generic Exception");
                 popUp(AlertType.ERROR, "An error ocurred trying to sign up, "
                          + "\n try again later.");
             }
@@ -193,6 +197,7 @@ public class FXMLSignUpController {
      * @param newValue new value of the event
      */
     private void handleTextChange(ObservableValue observable, String oldValue, String newValue) {
+        LOGGER.info("User is changing text");
         String errString = null;
         btn_SignUp.setDisable(true);
 
@@ -203,9 +208,9 @@ public class FXMLSignUpController {
                 errString = "Username cannot be empty";
             } else if (!Pattern.matches("[a-zA-Z0-9]+", txt_Username.getText())) { //Syntax w/o especial characters or blankspaces
                 errString = "Username not valid \n (Only A-Z and 0-9)";
-            } else if (txt_Username.getText().length() < 6
+            } else if (txt_Username.getText().length() < 5
                     || txt_Username.getText().length() > 20) { //Username length is between 6 and 20
-                errString = "Username must to be between \n 6 – 20 characters";
+                errString = "Username must to be between \n 5 – 20 characters";
             } else {//If username is OK
                 errString = "";
                 usernameOK = true;
@@ -235,7 +240,8 @@ public class FXMLSignUpController {
             nameOK = false;
             if (txt_Fullname.getText().isEmpty()) {//Field is empty
                 errString = "Fullname cannot be empty";
-            } else if (!Pattern.matches("[a-zA-Z_ ]+", txt_Fullname.getText())) { // 
+            } else if (!Pattern.matches("[a-z_A-Z_ _ñÑáÁéÉíÍóÓúÚ]+", txt_Fullname.getText())) { // 
+                //[a-z_A-Z_ ]
                 errString = "Fullname not valid\n(Only A-Z and blankspaces)";
             } else if (txt_Fullname.getText().length() < 5
                     || txt_Fullname.getText().length() > 50) { //Fullname length is between 6 and 20
@@ -293,6 +299,7 @@ public class FXMLSignUpController {
      * @return the final result
      */
     private boolean checkEmail(String email) {
+        LOGGER.info("Checking email...");
         boolean ok = false;
         boolean at = false;
 
@@ -301,9 +308,11 @@ public class FXMLSignUpController {
             if (email.substring(letra, letra + 1).equalsIgnoreCase("@"))//Search for @
                 at = true;
             if (at && email.substring(letra, letra + 1).equalsIgnoreCase(".")){//Search for .
+                LOGGER.info("Email correct");
                 return ok=true;
             }
         }
+        LOGGER.info("Email incorrect");
         return ok;
     }
 
